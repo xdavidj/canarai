@@ -26,15 +26,15 @@ jobs:
         run: uv python install 3.11
 
       - name: Install dependencies
-        working-directory: packages/canary-api
+        working-directory: packages/canarai-api
         run: uv sync --dev
 
       - name: Run ruff check
-        working-directory: packages/canary-api
+        working-directory: packages/canarai-api
         run: uv run ruff check src/
 
       - name: Run ruff format check
-        working-directory: packages/canary-api
+        working-directory: packages/canarai-api
         run: uv run ruff format --check src/
 
   lint-typescript:
@@ -55,11 +55,11 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        working-directory: packages/canary-script
+        working-directory: packages/canarai-script
         run: pnpm install --frozen-lockfile
 
       - name: Type check
-        working-directory: packages/canary-script
+        working-directory: packages/canarai-script
         run: pnpm exec tsc --noEmit
 
   test-python:
@@ -78,11 +78,11 @@ jobs:
         run: uv python install 3.11
 
       - name: Install dependencies
-        working-directory: packages/canary-api
+        working-directory: packages/canarai-api
         run: uv sync --dev
 
       - name: Run tests
-        working-directory: packages/canary-api
+        working-directory: packages/canarai-api
         run: uv run pytest -v --tb=short
         env:
           DATABASE_URL: "sqlite+aiosqlite:///test.db"
@@ -128,19 +128,19 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        working-directory: packages/canary-script
+        working-directory: packages/canarai-script
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        working-directory: packages/canary-script
+        working-directory: packages/canarai-script
         run: pnpm build
 
       - name: Check bundle exists
-        run: test -f packages/canary-script/dist/canary.js
+        run: test -f packages/canarai-script/dist/canarai.js
 
       - name: Check gzipped size under 15KB
         run: |
-          GZIP_SIZE=$(gzip -c packages/canary-script/dist/canary.js | wc -c)
+          GZIP_SIZE=$(gzip -c packages/canarai-script/dist/canarai.js | wc -c)
           GZIP_KB=$((GZIP_SIZE / 1024))
           echo "Gzipped size: ${GZIP_SIZE} bytes (${GZIP_KB} KB)"
           if [ "$GZIP_SIZE" -gt 15360 ]; then
@@ -152,6 +152,6 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: canary-script
-          path: packages/canary-script/dist/canary.js
+          name: canarai-script
+          path: packages/canarai-script/dist/canarai.js
           retention-days: 7

@@ -4,8 +4,8 @@ requires-python = ">=3.11"
 
 [manifest]
 members = [
-    "canary",
-    "canary-api",
+    "canarai",
+    "canarai-api",
 ]
 
 [[package]]
@@ -111,14 +111,14 @@ wheels = [
 ]
 
 [[package]]
-name = "canary"
+name = "canarai"
 version = "0.1.0"
 source = { virtual = "." }
 
 [[package]]
-name = "canary-api"
+name = "canarai-api"
 version = "0.1.0"
-source = { editable = "packages/canary-api" }
+source = { editable = "packages/canarai-api" }
 dependencies = [
     { name = "aiosqlite" },
     { name = "alembic" },

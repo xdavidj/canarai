@@ -12,21 +12,21 @@
      \/__/         \/__/         \/__/         \/__/         \|__|        \/__/
 ```
 
-# Canary
+# canar.ai
 
 **Open source AI agent prompt injection testing framework**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/canary-security/canary/ci.yml?branch=main&label=CI)](https://github.com/canary-security/canary/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/xdavidj/canarai/ci.yml?branch=main&label=CI)](https://github.com/xdavidj/canarai/actions)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](docker/docker-compose.selfhosted.yml)
 
 ---
 
-## What is Canary?
+## What is canar.ai?
 
 AI agents that browse the web are vulnerable to **prompt injection attacks** hidden in page content. Malicious actors can embed invisible instructions in HTML -- using CSS `display:none` divs, white-on-white text, hidden form fields, meta tags, and more -- that are invisible to human users but readable by LLMs processing page content. These hidden instructions can hijack the agent's goals, exfiltrate user data, or force the agent to take unintended actions.
 
-Canary is an open source framework that lets **website owners and security researchers** test how AI agents respond to controlled prompt injection. You embed a lightweight JavaScript snippet on your site. When an AI agent visits, Canary detects it through user-agent matching, browser fingerprinting, and behavioral analysis. It then injects a set of controlled test payloads using the same techniques real attackers use -- hidden divs, meta tags, JSON-LD, CSS pseudo-elements, and 13 other delivery methods. Canary observes whether the agent reads, acknowledges, or follows the injected instructions, then reports the results to your API.
+canar.ai is an open source framework that lets **website owners and security researchers** test how AI agents respond to controlled prompt injection. You embed a lightweight JavaScript snippet on your site. When an AI agent visits, canar.ai detects it through user-agent matching, browser fingerprinting, and behavioral analysis. It then injects a set of controlled test payloads using the same techniques real attackers use -- hidden divs, meta tags, JSON-LD, CSS pseudo-elements, and 13 other delivery methods. canar.ai observes whether the agent reads, acknowledges, or follows the injected instructions, then reports the results to your API.
 
 Think of it as a **penetration testing framework for AI agents**. Instead of testing your own security, you are testing the security of the AI agents visiting your site. The results help agent developers harden their products, and they help site owners understand their exposure.
 
@@ -37,8 +37,8 @@ Think of it as a **penetration testing framework for AI agents**. Instead of tes
 **1. Start the server**
 
 ```bash
-git clone https://github.com/canary-security/canary.git
-cd canary
+git clone https://github.com/xdavidj/canarai.git
+cd canarai
 docker compose -f docker/docker-compose.selfhosted.yml up -d
 ```
 
@@ -53,16 +53,16 @@ Add the returned script tag to your site:
 
 ```html
 <script
-  src="http://localhost:8787/static/canary.js"
-  data-canary-site-key="cy_live_xxxxxxxxxxxxxxxxxxxx"
-  data-canary-endpoint="http://localhost:8787"
+  src="http://localhost:8787/static/canarai.js"
+  data-canarai-site-key="ca_live_xxxxxxxxxxxxxxxxxxxx"
+  data-canarai-endpoint="http://localhost:8787"
 ></script>
 ```
 
 **3. View results**
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results
 ```
 
 See the full [Quickstart Guide](docs/quickstart.md) for detailed setup instructions.
@@ -72,7 +72,7 @@ See the full [Quickstart Guide](docs/quickstart.md) for detailed setup instructi
 ## How It Works
 
 ```
-                          CANARY DETECTION PIPELINE
+                          CANARAI DETECTION PIPELINE
 
   Website Visit           Detection             Test Injection
  +-----------+      +------------------+      +------------------+
@@ -109,7 +109,7 @@ See the full [Quickstart Guide](docs/quickstart.md) for detailed setup instructi
 
 1. **Detect**: The embedded script runs a multi-layered detection pipeline combining user-agent matching (40% weight), browser fingerprinting (25%), and behavioral analysis (25%) to determine whether a visitor is an AI agent. Known crawlers (Googlebot, Bingbot, etc.) are excluded. Known AI agent UAs (GPTBot, ClaudeBot, PerplexityBot, etc.) short-circuit to `confirmed_agent`.
 
-2. **Inject**: If the confidence score meets the threshold, Canary injects test payloads from the test library into the page DOM using 17 different delivery methods. All injections use `textContent` and `setAttribute` -- never `innerHTML` -- to prevent self-inflicted XSS.
+2. **Inject**: If the confidence score meets the threshold, canar.ai injects test payloads from the test library into the page DOM using 17 different delivery methods. All injections use `textContent` and `setAttribute` -- never `innerHTML` -- to prevent self-inflicted XSS.
 
 3. **Observe**: A MutationObserver watches for DOM changes that reference canary markers. Network requests are monitored for exfiltration attempts. Timing analysis detects how quickly the agent processes hidden content.
 
@@ -119,13 +119,13 @@ See the full [Quickstart Guide](docs/quickstart.md) for detailed setup instructi
 
 ## Architecture
 
-Canary is a monorepo with three packages:
+canar.ai is a monorepo with three packages:
 
 | Package | Language | Description |
 |---------|----------|-------------|
-| `packages/canary-script` | TypeScript | Embeddable detection + injection script (IIFE, <15KB gzipped, zero dependencies) |
-| `packages/canary-api` | Python | FastAPI backend with async SQLAlchemy, Pydantic schemas, webhook dispatch |
-| `packages/canary-tests` | YAML | Test module library with JSON Schema validation |
+| `packages/canarai-script` | TypeScript | Embeddable detection + injection script (IIFE, <15KB gzipped, zero dependencies) |
+| `packages/canarai-api` | Python | FastAPI backend with async SQLAlchemy, Pydantic schemas, webhook dispatch |
+| `packages/canarai-tests` | YAML | Test module library with JSON Schema validation |
 
 Supporting files:
 
@@ -141,7 +141,7 @@ See [Architecture Documentation](docs/architecture.md) for the full technical de
 
 ## Test Library
 
-Canary ships with 20 test modules across 10 categories. Each test is a YAML file validated against a JSON Schema.
+canar.ai ships with 20 test modules across 10 categories. Each test is a YAML file validated against a JSON Schema.
 
 | ID | Name | Category | Severity |
 |----|------|----------|----------|
@@ -183,7 +183,7 @@ See [Test Authoring Guide](docs/test-authoring.md) for how to contribute new tes
 | Cost | Free | Free tier + paid plans |
 | Database | SQLite (default) or PostgreSQL | Managed PostgreSQL |
 | Setup | Docker Compose or bare metal | Embed script tag, done |
-| Data storage | Your infrastructure | Canary cloud |
+| Data storage | Your infrastructure | canar.ai cloud |
 | Agent feed | No | Yes (cross-site agent intelligence) |
 | Trend analysis | No | Yes (industry-wide trends) |
 | Webhooks | Yes | Yes |
@@ -234,17 +234,17 @@ See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for development setup and guidelines
 
 ## Security
 
-Canary is a security testing tool and should be used responsibly.
+canar.ai is a security testing tool and should be used responsibly.
 
-**Reporting vulnerabilities**: If you discover a security vulnerability in Canary itself, please report it privately via [GitHub Security Advisories](https://github.com/canary-security/canary/security/advisories/new) or email security@canar.ai. Do **not** create a public issue.
+**Reporting vulnerabilities**: If you discover a security vulnerability in canar.ai itself, please report it privately via [GitHub Security Advisories](https://github.com/xdavidj/canarai/security/advisories/new) or email security@canar.ai. Do **not** create a public issue.
 
-**Responsible use**: Canary injects controlled test content into pages you own. Do not use it to attack, disrupt, or interfere with third-party AI agents without authorization.
+**Responsible use**: canar.ai injects controlled test content into pages you own. Do not use it to attack, disrupt, or interfere with third-party AI agents without authorization.
 
 ---
 
 ## License
 
-Canary is released under the [MIT License](LICENSE).
+canar.ai is released under the [MIT License](LICENSE).
 
 ---
 

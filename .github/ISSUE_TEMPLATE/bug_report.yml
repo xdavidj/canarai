@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug or unexpected behavior in Canary
+description: Report a bug or unexpected behavior in canar.ai
 title: "[Bug]: "
 labels: ["bug", "triage"]
 assignees: []
@@ -25,7 +25,7 @@ body:
       label: Steps to Reproduce
       description: Step-by-step instructions to reproduce the behavior.
       placeholder: |
-        1. Set up Canary with...
+        1. Set up canar.ai with...
         2. Navigate to...
         3. Observe that...
     validations:
@@ -53,11 +53,11 @@ body:
     id: component
     attributes:
       label: Component
-      description: Which part of Canary is affected?
+      description: Which part of canar.ai is affected?
       options:
-        - canary-script (client-side JS)
-        - canary-api (backend)
-        - canary-tests (test modules)
+        - canarai-script (client-side JS)
+        - canarai-api (backend)
+        - canarai-tests (test modules)
         - Docker / self-hosted setup
         - Demo page
         - CLI scripts
@@ -70,7 +70,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of Canary are you using?
+      description: What version of canar.ai are you using?
       placeholder: "e.g., 0.1.0 or commit hash"
     validations:
       required: false
@@ -106,5 +106,5 @@ body:
       options:
         - label: I have searched existing issues to ensure this is not a duplicate.
           required: true
-        - label: I am using the latest version of Canary.
+        - label: I am using the latest version of canar.ai.
           required: false

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NexusCode AI - Intelligent Code Assistant | Canary Demo</title>
+  <title>NexusCode AI - Intelligent Code Assistant | canar.ai Demo</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -350,8 +350,8 @@
       font-size: 13px;
     }
 
-    /* ── Canary Status Panel ── */
-    #canary-status {
+    /* ── canar.ai Status Panel ── */
+    #canarai-status {
       position: fixed;
       bottom: 0;
       left: 0;
@@ -365,7 +365,7 @@
       font-size: 12px;
       transition: all 0.3s ease;
     }
-    #canary-status .status-inner {
+    #canarai-status .status-inner {
       max-width: 1200px;
       margin: 0 auto;
       display: flex;
@@ -404,7 +404,7 @@
       .hero { padding: 48px 24px; }
       .feature-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
-      #canary-status .status-inner { gap: 12px; }
+      #canarai-status .status-inner { gap: 12px; }
     }
   </style>
 </head>
@@ -557,16 +557,16 @@
 
   <!-- Footer -->
   <footer>
-    <p>NexusCode AI is a fictional product for demonstration purposes. This page is part of the Canary prompt injection testing framework.</p>
-    <p style="margin-top: 8px; color: #404055;">canary v0.1.0 &mdash; open source AI agent security testing</p>
+    <p>NexusCode AI is a fictional product for demonstration purposes. This page is part of the canar.ai prompt injection testing framework.</p>
+    <p style="margin-top: 8px; color: #404055;">canarai v0.1.0 &mdash; open source AI agent security testing</p>
   </footer>
 
-  <!-- Canary Status Panel -->
-  <div id="canary-status">
+  <!-- canar.ai Status Panel -->
+  <div id="canarai-status">
     <div class="status-inner">
       <div class="status-item">
         <div class="status-dot inactive" id="status-dot"></div>
-        <span class="status-label">Canary</span>
+        <span class="status-label">canar.ai</span>
         <span class="status-value" id="status-active">Loading...</span>
       </div>
       <div class="status-item">
@@ -588,11 +588,11 @@
     </div>
   </div>
 
-  <!-- Canary Script Embed -->
+  <!-- canar.ai Script Embed -->
   <script
-    src="http://localhost:8787/static/canary.js"
-    data-canary-site-key="cy_test_demo00000000000000"
-    data-canary-endpoint="http://localhost:8787"
+    src="http://localhost:8787/static/canarai.js"
+    data-canarai-site-key="ca_test_demo00000000000000"
+    data-canarai-endpoint="http://localhost:8787"
   ></script>
 
   <!-- Status Panel Controller -->
@@ -613,7 +613,7 @@
 
       function getState() {
         try {
-          return window.__CANARY_STATE__ || null;
+          return window.__CANARAI_STATE__ || null;
         } catch (e) {
           return null;
         }
@@ -626,7 +626,7 @@
         if (!state) {
           if (!scriptDetected) {
             // Check if the script tag loaded at all
-            const scripts = document.querySelectorAll('script[data-canary-site-key]');
+            const scripts = document.querySelectorAll('script[data-canarai-site-key]');
             if (scripts.length > 0) {
               elActive.textContent = 'Script loaded, waiting for init...';
               dot.className = 'status-dot waiting';
@@ -717,7 +717,7 @@
         }
       }
 
-      // Start polling after a short delay to let the canary script load
+      // Start polling after a short delay to let the canarai script load
       setTimeout(updatePanel, 300);
     })();
   </script>

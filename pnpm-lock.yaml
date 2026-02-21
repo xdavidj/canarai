@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  packages/canary-script:
+  packages/canarai-script:
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.0

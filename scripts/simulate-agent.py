@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-simulate-agent.py — Simulate an AI agent visiting a page with Canary tests.
+simulate-agent.py — Simulate an AI agent visiting a page with canar.ai tests.
 
 Uses Playwright to launch a headless Chromium browser with an AI agent
 user-agent string, navigates to a target URL, and observes what the
-Canary script injects and detects.
+canar.ai script injects and detects.
 
 Prerequisites:
     pip install playwright
@@ -86,7 +86,7 @@ def run_simulation(args: argparse.Namespace) -> None:
     """Run the AI agent simulation."""
     ua_string = AI_AGENT_USER_AGENTS.get(args.agent, AI_AGENT_USER_AGENTS["generic"])
 
-    print(f"\n{C.BOLD}Canary Agent Simulator{C.RESET}")
+    print(f"\n{C.BOLD}canar.ai Agent Simulator{C.RESET}")
     print(f"{C.DIM}{'=' * 60}{C.RESET}\n")
     print(f"  {C.BOLD}Target URL:{C.RESET}    {C.CYAN}{args.url}{C.RESET}")
     print(f"  {C.BOLD}Agent type:{C.RESET}    {args.agent}")
@@ -142,18 +142,18 @@ def run_simulation(args: argparse.Namespace) -> None:
         print(f"  {C.GREEN}Page loaded{C.RESET}")
         print(f"  {C.DIM}Title: {page.title()}{C.RESET}")
 
-        # Wait for Canary script to execute
-        print(f"\n  {C.BOLD}Waiting for Canary script...{C.RESET}")
-        canary_state = None
+        # Wait for canar.ai script to execute
+        print(f"\n  {C.BOLD}Waiting for canar.ai script...{C.RESET}")
+        canarai_state = None
         start_time = time.time()
 
         while time.time() - start_time < args.timeout:
             try:
-                canary_state = page.evaluate("() => window.__CANARY_STATE__")
+                canarai_state = page.evaluate("() => window.__CANARAI_STATE__")
             except Exception:
-                canary_state = None
+                canarai_state = None
 
-            if canary_state:
+            if canarai_state:
                 break
 
             time.sleep(0.5)
@@ -163,15 +163,15 @@ def run_simulation(args: argparse.Namespace) -> None:
 
         print()
 
-        # Report Canary state
-        if canary_state:
-            print(f"\n  {C.GREEN}{C.BOLD}Canary script detected!{C.RESET}")
+        # Report canar.ai state
+        if canarai_state:
+            print(f"\n  {C.GREEN}{C.BOLD}canar.ai script detected!{C.RESET}")
             print(f"  {C.DIM}{'─' * 40}{C.RESET}")
 
-            if isinstance(canary_state, dict):
-                detection = canary_state.get("detection", {})
-                tests = canary_state.get("tests", {})
-                results = canary_state.get("results", {})
+            if isinstance(canarai_state, dict):
+                detection = canarai_state.get("detection", {})
+                tests = canarai_state.get("tests", {})
+                results = canarai_state.get("results", {})
 
                 print(f"  {C.BOLD}Detection:{C.RESET}")
                 if isinstance(detection, dict):
@@ -209,10 +209,10 @@ def run_simulation(args: argparse.Namespace) -> None:
                 else:
                     print(f"    {C.DIM}{results}{C.RESET}")
             else:
-                print(f"  {C.DIM}{json.dumps(canary_state, indent=2)}{C.RESET}")
+                print(f"  {C.DIM}{json.dumps(canarai_state, indent=2)}{C.RESET}")
         else:
-            print(f"\n  {C.YELLOW}No Canary state found (window.__CANARY_STATE__ not set){C.RESET}")
-            print(f"  {C.DIM}The Canary script may not be embedded on this page,")
+            print(f"\n  {C.YELLOW}No canar.ai state found (window.__CANARAI_STATE__ not set){C.RESET}")
+            print(f"  {C.DIM}The canar.ai script may not be embedded on this page,")
             print(f"  or debug mode may not be enabled.{C.RESET}")
 
         # Check for injected DOM elements
@@ -242,38 +242,38 @@ def run_simulation(args: argparse.Namespace) -> None:
             print(f"    {C.DIM}No hidden elements found{C.RESET}")
 
         # Console log analysis
-        canary_logs = [m for m in console_messages if "canary" in m.get("text", "").lower()]
-        if canary_logs:
-            print(f"\n  {C.BOLD}Canary console messages:{C.RESET}")
-            for msg in canary_logs:
+        canarai_logs = [m for m in console_messages if "canarai" in m.get("text", "").lower()]
+        if canarai_logs:
+            print(f"\n  {C.BOLD}canar.ai console messages:{C.RESET}")
+            for msg in canarai_logs:
                 color = C.YELLOW if msg["type"] == "warning" else C.DIM
                 print(f"    {color}[{msg['type']}] {msg['text'][:100]}{C.RESET}")
 
-        # Network requests to Canary endpoint
-        canary_requests = [r for r in network_requests if "canary" in r.get("url", "").lower()]
-        if canary_requests:
-            print(f"\n  {C.BOLD}Canary network requests:{C.RESET}")
-            for req_info in canary_requests:
+        # Network requests to canar.ai endpoint
+        canarai_requests = [r for r in network_requests if "canarai" in r.get("url", "").lower()]
+        if canarai_requests:
+            print(f"\n  {C.BOLD}canar.ai network requests:{C.RESET}")
+            for req_info in canarai_requests:
                 print(f"    {C.DIM}{req_info['method']} {req_info['url'][:80]}{C.RESET}")
 
         # Wait for remaining observations
-        if canary_state and args.timeout > 10:
+        if canarai_state and args.timeout > 10:
             remaining = max(0, args.timeout - int(time.time() - start_time))
             if remaining > 0:
                 print(f"\n  {C.DIM}Waiting {remaining}s for additional observations...{C.RESET}")
                 for _ in range(remaining):
                     time.sleep(1)
-                    new_state = page.evaluate("() => window.__CANARY_STATE__")
-                    if new_state != canary_state:
+                    new_state = page.evaluate("() => window.__CANARAI_STATE__")
+                    if new_state != canarai_state:
                         print(f"  {C.YELLOW}State updated during observation period{C.RESET}")
-                        canary_state = new_state
+                        canarai_state = new_state
 
         # Check API results
         if args.api_url:
             print(f"\n  {C.BOLD}Checking API for results...{C.RESET}")
             visit_id = None
-            if isinstance(canary_state, dict):
-                visit_id = canary_state.get("visit_id")
+            if isinstance(canarai_state, dict):
+                visit_id = canarai_state.get("visit_id")
 
             results = check_api_results(args.api_url, visit_id)
             if results:
@@ -297,7 +297,7 @@ def run_simulation(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Simulate an AI agent visiting a page with Canary tests"
+        description="Simulate an AI agent visiting a page with canar.ai tests"
     )
     parser.add_argument(
         "--url",

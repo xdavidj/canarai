@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-generate-api-key.py — Generate Canary site keys and API keys.
+generate-api-key.py — Generate canar.ai site keys and API keys.
 
-Generates cryptographically secure random keys for use with the Canary API.
+Generates cryptographically secure random keys for use with the canar.ai API.
 
 Usage:
     python scripts/generate-api-key.py
@@ -33,22 +33,22 @@ class C:
 CHARSET = string.ascii_letters + string.digits
 
 
-def generate_site_key(prefix: str = "cy_live_") -> str:
-    """Generate a site key: cy_live_ + 20 random alphanumeric characters."""
+def generate_site_key(prefix: str = "ca_live_") -> str:
+    """Generate a site key: ca_live_ + 20 random alphanumeric characters."""
     random_part = "".join(secrets.choice(CHARSET) for _ in range(20))
     return f"{prefix}{random_part}"
 
 
 def generate_api_key() -> str:
-    """Generate an API key: cy_sk_ + 40 random alphanumeric characters."""
+    """Generate an API key: ca_sk_ + 40 random alphanumeric characters."""
     random_part = "".join(secrets.choice(CHARSET) for _ in range(40))
-    return f"cy_sk_{random_part}"
+    return f"ca_sk_{random_part}"
 
 
 def register_with_api(
     api_url: str, site_key: str, api_key: str, domain: str
 ) -> tuple[bool, str]:
-    """Register the generated keys with the Canary API."""
+    """Register the generated keys with the canar.ai API."""
     url = f"{api_url.rstrip('/')}/v1/sites"
     payload = json.dumps({
         "site_key": site_key,
@@ -76,7 +76,7 @@ def register_with_api(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate Canary site keys and API keys"
+        description="Generate canar.ai site keys and API keys"
     )
     parser.add_argument(
         "--api-url",
@@ -93,15 +93,15 @@ def main() -> None:
     parser.add_argument(
         "--test",
         action="store_true",
-        help="Generate test keys (cy_test_ prefix instead of cy_live_)",
+        help="Generate test keys (ca_test_ prefix instead of ca_live_)",
     )
     args = parser.parse_args()
 
-    prefix = "cy_test_" if args.test else "cy_live_"
+    prefix = "ca_test_" if args.test else "ca_live_"
     site_key = generate_site_key(prefix)
     api_key = generate_api_key()
 
-    print(f"\n{C.BOLD}Canary Key Generator{C.RESET}")
+    print(f"\n{C.BOLD}canar.ai Key Generator{C.RESET}")
     print(f"{C.DIM}{'=' * 60}{C.RESET}\n")
 
     print(f"  {C.BOLD}Site Key:{C.RESET}  {C.CYAN}{site_key}{C.RESET}")
@@ -113,9 +113,9 @@ def main() -> None:
 
     # Embed snippet
     print(f"  {C.BOLD}Embed snippet:{C.RESET}")
-    endpoint = args.api_url or "https://your-canary-instance.com"
+    endpoint = args.api_url or "https://your-canarai-instance.com"
     print(f"  {C.DIM}<script")
-    print(f'    src="{endpoint}/static/canary.js"')
+    print(f'    src="{endpoint}/static/canarai.js"')
     print(f'    data-site-key="{site_key}"')
     print(f'    data-endpoint="{endpoint}"')
     print(f"  ></script>{C.RESET}")
@@ -124,8 +124,8 @@ def main() -> None:
 
     # Environment variables
     print(f"  {C.BOLD}Environment variables:{C.RESET}")
-    print(f"  {C.DIM}CANARY_SITE_KEY={site_key}")
-    print(f"  CANARY_API_KEY={api_key}{C.RESET}")
+    print(f"  {C.DIM}CANARAI_SITE_KEY={site_key}")
+    print(f"  CANARAI_API_KEY={api_key}{C.RESET}")
 
     print()
 

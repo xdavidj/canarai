@@ -1,27 +1,27 @@
 # API Reference
 
-Complete reference for the Canary API. All endpoints are versioned under `/v1/` unless otherwise noted.
+Complete reference for the canar.ai API. All endpoints are versioned under `/v1/` unless otherwise noted.
 
 ---
 
 ## Authentication
 
-Canary uses two types of credentials:
+canar.ai uses two types of credentials:
 
 ### Site Keys (Public)
 
-Site keys have the prefix `cy_live_` (production) or `cy_test_` (testing) followed by 20 alphanumeric characters.
+Site keys have the prefix `ca_live_` (production) or `ca_test_` (testing) followed by 20 alphanumeric characters.
 
 Site keys are embedded in client-side code and sent as part of the ingest payload body. They identify which site a visit belongs to but do not grant management access.
 
 ### API Keys (Secret)
 
-API keys have the prefix `cy_sk_` followed by 40 alphanumeric characters.
+API keys have the prefix `ca_sk_` followed by 40 alphanumeric characters.
 
 API keys are sent as Bearer tokens in the `Authorization` header. They grant full management access to the associated site.
 
 ```
-Authorization: Bearer cy_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Authorization: Bearer ca_sk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 Keep API keys secret. Never embed them in client-side code.
@@ -76,7 +76,7 @@ curl -X POST http://localhost:8787/v1/ingest \
   -H "Content-Type: application/json" \
   -d '{
     "v": 1,
-    "site_key": "cy_live_xxxxxxxxxxxxxxxxxxxx",
+    "site_key": "ca_live_xxxxxxxxxxxxxxxxxxxx",
     "visit_id": "550e8400-e29b-41d4-a716-446655440000",
     "timestamp": "2026-02-21T12:00:00Z",
     "page_url": "https://example.com/page",
@@ -97,7 +97,7 @@ curl -X POST http://localhost:8787/v1/ingest \
         "delivery_method": "css_display_none",
         "outcome": "full_compliance",
         "evidence": {
-          "canary_token_observed": true,
+          "canarai_token_observed": true,
           "response_time_ms": 340
         },
         "injected_at": "2026-02-21T12:00:01Z",
@@ -167,14 +167,14 @@ Fetch the test configuration for a site. Called by the embedded script to determ
 **Request:**
 
 ```bash
-curl http://localhost:8787/v1/config/cy_live_xxxxxxxxxxxxxxxxxxxx
+curl http://localhost:8787/v1/config/ca_live_xxxxxxxxxxxxxxxxxxxx
 ```
 
 **Response (200):**
 
 ```json
 {
-  "site_key": "cy_live_xxxxxxxxxxxxxxxxxxxx",
+  "site_key": "ca_live_xxxxxxxxxxxxxxxxxxxx",
   "enabled": true,
   "detection_threshold": 0.5,
   "tests": [
@@ -242,7 +242,7 @@ curl -X POST http://localhost:8787/v1/sites \
 {
   "site": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "site_key": "cy_live_aBcDeFgHiJkLmNoPqRsT",
+    "site_key": "ca_live_aBcDeFgHiJkLmNoPqRsT",
     "domain": "example.com",
     "config": {
       "enabled_tests": ["CAN-0001", "CAN-0002", "CAN-0003", "CAN-0004"],
@@ -253,8 +253,8 @@ curl -X POST http://localhost:8787/v1/sites \
     "created_at": "2026-02-21T12:00:00Z",
     "updated_at": "2026-02-21T12:00:00Z"
   },
-  "api_key": "cy_sk_aBcDeFgHiJkLmNoPqRsTuVwXyZaBcDeFgHiJkLmN",
-  "api_key_prefix": "cy_sk_aB"
+  "api_key": "ca_sk_aBcDeFgHiJkLmNoPqRsTuVwXyZaBcDeFgHiJkLmN",
+  "api_key_prefix": "ca_sk_aB"
 }
 ```
 
@@ -273,7 +273,7 @@ List all sites associated with the authenticated API key.
 **Request:**
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/sites
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/sites
 ```
 
 **Response (200):**
@@ -282,7 +282,7 @@ curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/sites
 [
   {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "site_key": "cy_live_aBcDeFgHiJkLmNoPqRsT",
+    "site_key": "ca_live_aBcDeFgHiJkLmNoPqRsT",
     "domain": "example.com",
     "config": {
       "enabled_tests": ["CAN-0001", "CAN-0002", "CAN-0003"],
@@ -311,7 +311,7 @@ Update a site's configuration. Only provided fields are updated.
 
 ```bash
 curl -X PATCH http://localhost:8787/v1/sites/550e8400-e29b-41d4-a716-446655440000 \
-  -H "Authorization: Bearer cy_sk_..." \
+  -H "Authorization: Bearer ca_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "config": {
@@ -334,7 +334,7 @@ curl -X PATCH http://localhost:8787/v1/sites/550e8400-e29b-41d4-a716-44665544000
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "site_key": "cy_live_aBcDeFgHiJkLmNoPqRsT",
+  "site_key": "ca_live_aBcDeFgHiJkLmNoPqRsT",
   "domain": "example.com",
   "config": {
     "enabled_tests": ["CAN-0001", "CAN-0002", "CAN-0003", "CAN-0004", "CAN-0008"],
@@ -364,18 +364,18 @@ Query test results with optional filtering and pagination.
 
 ```bash
 # All results
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results
 
 # Filter by classification
-curl -H "Authorization: Bearer cy_sk_..." \
+curl -H "Authorization: Bearer ca_sk_..." \
   "http://localhost:8787/v1/results?classification=confirmed_agent"
 
 # Filter by test ID and date range
-curl -H "Authorization: Bearer cy_sk_..." \
+curl -H "Authorization: Bearer ca_sk_..." \
   "http://localhost:8787/v1/results?test_id=CAN-0001&date_from=2026-02-01T00:00:00Z&limit=10"
 
 # Filter by outcome
-curl -H "Authorization: Bearer cy_sk_..." \
+curl -H "Authorization: Bearer ca_sk_..." \
   "http://localhost:8787/v1/results?outcome=exfiltration_attempted"
 ```
 
@@ -415,7 +415,7 @@ curl -H "Authorization: Bearer cy_sk_..." \
         "outcome": "full_compliance",
         "score": 75,
         "evidence": {
-          "canary_token_observed": true,
+          "canarai_token_observed": true,
           "response_time_ms": 340
         },
         "injected_at": "2026-02-21T12:00:01Z",
@@ -442,10 +442,10 @@ Get aggregate statistics across all test results.
 **Request:**
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results/summary
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results/summary
 
 # With date range
-curl -H "Authorization: Bearer cy_sk_..." \
+curl -H "Authorization: Bearer ca_sk_..." \
   "http://localhost:8787/v1/results/summary?date_from=2026-02-01T00:00:00Z"
 ```
 
@@ -504,7 +504,7 @@ Register a new webhook endpoint to receive event notifications.
 
 ```bash
 curl -X POST http://localhost:8787/v1/webhooks \
-  -H "Authorization: Bearer cy_sk_..." \
+  -H "Authorization: Bearer ca_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "site_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -551,7 +551,7 @@ Send a test payload to verify that the webhook endpoint is reachable and correct
 
 ```bash
 curl -X POST http://localhost:8787/v1/webhooks/webhook-uuid/test \
-  -H "Authorization: Bearer cy_sk_..."
+  -H "Authorization: Bearer ca_sk_..."
 ```
 
 **Response (200):**
@@ -599,7 +599,7 @@ Get cross-site agent intelligence data. This endpoint aggregates anonymized agen
 **Request:**
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." https://api.canar.ai/v1/feed/agents
+curl -H "Authorization: Bearer ca_sk_..." https://api.canar.ai/v1/feed/agents
 ```
 
 **Response (200):**
@@ -642,7 +642,7 @@ Get trend analysis showing how agent behavior changes over time.
 **Request:**
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." \
+curl -H "Authorization: Bearer ca_sk_..." \
   "https://api.canar.ai/v1/feed/trends?period=7d"
 ```
 

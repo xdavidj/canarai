@@ -1,6 +1,6 @@
 # Self-Hosted Deployment Guide
 
-This guide covers deploying Canary on your own infrastructure. Canary is designed to be lightweight and operationally simple -- a single Docker container with SQLite is sufficient for most use cases.
+This guide covers deploying canar.ai on your own infrastructure. canar.ai is designed to be lightweight and operationally simple -- a single Docker container with SQLite is sufficient for most use cases.
 
 ---
 
@@ -31,8 +31,8 @@ This guide covers deploying Canary on your own infrastructure. Canary is designe
 ### Quick Start
 
 ```bash
-git clone https://github.com/canary-security/canary.git
-cd canary
+git clone https://github.com/xdavidj/canarai.git
+cd canarai
 
 # Set a secure API secret key
 export API_SECRET_KEY=$(openssl rand -hex 32)
@@ -41,7 +41,7 @@ export API_SECRET_KEY=$(openssl rand -hex 32)
 docker compose -f docker/docker-compose.selfhosted.yml up -d
 ```
 
-This starts the Canary API on port `8787` with SQLite storage. Data is persisted in `docker/data/canary.db`.
+This starts the canar.ai API on port `8787` with SQLite storage. Data is persisted in `docker/data/canarai.db`.
 
 ### Verify
 
@@ -67,17 +67,17 @@ rm -rf docker/data/
 
 ## 2. Configuration
 
-### canary.toml
+### canarai.toml
 
-The `docker/canary.toml` file configures site-level behavior. It is mounted read-only into the container:
+The `docker/canarai.toml` file configures site-level behavior. It is mounted read-only into the container:
 
 ```toml
-[canary]
+[canarai]
 domain = "example.com"
 enabled_tests = ["CAN-0001", "CAN-0002", "CAN-0003", "CAN-0004", "CAN-0008"]
 detection_threshold = 0.70
 
-[canary.webhook]
+[canarai.webhook]
 url = ""
 events = ["agent_detected", "test_failed"]
 secret = "change-me"
@@ -96,11 +96,11 @@ secret = "change-me"
 
 ## 3. Environment Variables
 
-All configuration can be set via environment variables. These take precedence over `canary.toml` for server-level settings.
+All configuration can be set via environment variables. These take precedence over `canarai.toml` for server-level settings.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DATABASE_URL` | `sqlite+aiosqlite:///./canary.db` | Database connection string |
+| `DATABASE_URL` | `sqlite+aiosqlite:///./canarai.db` | Database connection string |
 | `API_SECRET_KEY` | `change-me` | Secret key for internal signing and session management. **Must be changed in production.** |
 | `API_HOST` | `0.0.0.0` | Host address to bind the API server to |
 | `API_PORT` | `8787` | Port to bind the API server to |
@@ -117,13 +117,13 @@ Edit the `environment` section in `docker/docker-compose.selfhosted.yml`:
 
 ```yaml
 services:
-  canary-api:
+  canarai-api:
     environment:
-      DATABASE_URL: sqlite+aiosqlite:///data/canary.db
+      DATABASE_URL: sqlite+aiosqlite:///data/canarai.db
       API_SECRET_KEY: ${API_SECRET_KEY:-your-secure-key-here}
       CORS_ORIGINS: "https://yoursite.com,https://www.yoursite.com"
       ENVIRONMENT: production
-      SCRIPT_BASE_URL: https://canary.yoursite.com
+      SCRIPT_BASE_URL: https://canarai.yoursite.com
 ```
 
 Or use a `.env` file in the project root:
@@ -150,27 +150,27 @@ export API_SECRET_KEY=$(openssl rand -hex 32)
 docker compose -f docker/docker-compose.yml up -d
 ```
 
-This starts both the Canary API and PostgreSQL 16. The database is created automatically with:
-- User: `canary`
-- Password: `canary`
-- Database: `canary`
+This starts both the canar.ai API and PostgreSQL 16. The database is created automatically with:
+- User: `canarai`
+- Password: `canarai`
+- Database: `canarai`
 
 **Change the default credentials in production.** Edit `docker/docker-compose.yml`:
 
 ```yaml
 postgres:
   environment:
-    POSTGRES_USER: canary
+    POSTGRES_USER: canarai
     POSTGRES_PASSWORD: a-strong-password-here
-    POSTGRES_DB: canary
+    POSTGRES_DB: canarai
 ```
 
 And update the `DATABASE_URL` in the API service accordingly:
 
 ```yaml
-canary-api:
+canarai-api:
   environment:
-    DATABASE_URL: postgresql+asyncpg://canary:a-strong-password-here@postgres:5432/canary
+    DATABASE_URL: postgresql+asyncpg://canarai:a-strong-password-here@postgres:5432/canarai
 ```
 
 ### Using an External PostgreSQL Instance
@@ -178,13 +178,13 @@ canary-api:
 If you already have a PostgreSQL server, set `DATABASE_URL` to point to it:
 
 ```bash
-DATABASE_URL=postgresql+asyncpg://user:password@your-pg-host:5432/canary
+DATABASE_URL=postgresql+asyncpg://user:password@your-pg-host:5432/canarai
 ```
 
 Install the `asyncpg` driver (included in the Docker image). For bare-metal:
 
 ```bash
-cd packages/canary-api
+cd packages/canarai-api
 uv sync --extra postgres
 ```
 
@@ -192,14 +192,14 @@ uv sync --extra postgres
 
 1. Export data from SQLite (if you have existing data you want to preserve):
    ```bash
-   sqlite3 canary.db .dump > canary_dump.sql
+   sqlite3 canarai.db .dump > canarai_dump.sql
    ```
 
 2. Start PostgreSQL and update `DATABASE_URL`
 
 3. The API will create tables automatically on startup. For manual migration, use Alembic:
    ```bash
-   cd packages/canary-api
+   cd packages/canarai-api
    uv run alembic upgrade head
    ```
 
@@ -209,17 +209,17 @@ uv sync --extra postgres
 
 ## 5. Reverse Proxy
 
-In production, place a reverse proxy in front of the Canary API to handle HTTPS termination.
+In production, place a reverse proxy in front of the canar.ai API to handle HTTPS termination.
 
 ### nginx
 
 ```nginx
 server {
     listen 443 ssl http2;
-    server_name canary.yoursite.com;
+    server_name canarai.yoursite.com;
 
-    ssl_certificate     /etc/letsencrypt/live/canary.yoursite.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/canary.yoursite.com/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/canarai.yoursite.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/canarai.yoursite.com/privkey.pem;
 
     # Security headers
     add_header X-Content-Type-Options "nosniff" always;
@@ -248,7 +248,7 @@ server {
 # Redirect HTTP to HTTPS
 server {
     listen 80;
-    server_name canary.yoursite.com;
+    server_name canarai.yoursite.com;
     return 301 https://$server_name$request_uri;
 }
 ```
@@ -256,7 +256,7 @@ server {
 ### Caddy
 
 ```
-canary.yoursite.com {
+canarai.yoursite.com {
     reverse_proxy localhost:8787
 
     header {
@@ -274,7 +274,7 @@ Caddy automatically provisions and renews HTTPS certificates via Let's Encrypt.
 After setting up the reverse proxy, update these settings:
 
 ```bash
-SCRIPT_BASE_URL=https://canary.yoursite.com
+SCRIPT_BASE_URL=https://canarai.yoursite.com
 CORS_ORIGINS=https://yoursite.com,https://www.yoursite.com
 ```
 
@@ -282,9 +282,9 @@ And update your embed snippet:
 
 ```html
 <script
-  src="https://canary.yoursite.com/static/canary.js"
-  data-canary-site-key="cy_live_xxxxxxxxxxxxxxxxxxxx"
-  data-canary-endpoint="https://canary.yoursite.com"
+  src="https://canarai.yoursite.com/static/canarai.js"
+  data-canarai-site-key="ca_live_xxxxxxxxxxxxxxxxxxxx"
+  data-canarai-endpoint="https://canarai.yoursite.com"
 ></script>
 ```
 
@@ -298,7 +298,7 @@ Webhooks allow you to receive real-time notifications when AI agents are detecte
 
 ```bash
 curl -X POST http://localhost:8787/v1/webhooks \
-  -H "Authorization: Bearer cy_sk_..." \
+  -H "Authorization: Bearer ca_sk_..." \
   -H "Content-Type: application/json" \
   -d '{
     "site_id": "your-site-uuid",
@@ -337,14 +337,14 @@ curl -X POST http://localhost:8787/v1/webhooks \
 
 | Header | Description |
 |--------|-------------|
-| `X-Canary-Signature` | HMAC-SHA256 signature of the payload body |
-| `X-Canary-Event` | Event type (e.g., `visit.agent_detected`) |
-| `X-Canary-Delivery` | Unique delivery ID (UUID) |
+| `X-Canarai-Signature` | HMAC-SHA256 signature of the payload body |
+| `X-Canarai-Event` | Event type (e.g., `visit.agent_detected`) |
+| `X-Canarai-Delivery` | Unique delivery ID (UUID) |
 | `Content-Type` | `application/json` |
 
 ### Verifying signatures
 
-To verify a webhook signature, compute `HMAC-SHA256(payload_body, webhook_secret)` and compare it to the `X-Canary-Signature` header.
+To verify a webhook signature, compute `HMAC-SHA256(payload_body, webhook_secret)` and compare it to the `X-Canarai-Signature` header.
 
 **Python example:**
 
@@ -364,7 +364,7 @@ def verify_signature(payload: bytes, signature: str, secret: str) -> bool:
 
 ### Slack integration
 
-For Slack, use an [Incoming Webhook URL](https://api.slack.com/messaging/webhooks). Canary sends JSON directly, so you may need a middleware to transform the payload into Slack's format. Alternatively, use a tool like [Hookdeck](https://hookdeck.com/) or a small serverless function.
+For Slack, use an [Incoming Webhook URL](https://api.slack.com/messaging/webhooks). canar.ai sends JSON directly, so you may need a middleware to transform the payload into Slack's format. Alternatively, use a tool like [Hookdeck](https://hookdeck.com/) or a small serverless function.
 
 ### Discord integration
 
@@ -383,7 +383,7 @@ After the maximum retries (`WEBHOOK_MAX_RETRIES`, default 3), the delivery is ma
 
 ```bash
 curl -X POST http://localhost:8787/v1/webhooks/{webhook_id}/test \
-  -H "Authorization: Bearer cy_sk_..."
+  -H "Authorization: Bearer ca_sk_..."
 ```
 
 ---
@@ -393,7 +393,7 @@ curl -X POST http://localhost:8787/v1/webhooks/{webhook_id}/test \
 ### Docker
 
 ```bash
-cd canary
+cd canarai
 
 # Pull latest code
 git pull origin main
@@ -409,11 +409,11 @@ Your SQLite database in `docker/data/` is preserved across rebuilds.
 ### Bare-metal
 
 ```bash
-cd canary
+cd canarai
 git pull origin main
 
 # Update Python dependencies
-cd packages/canary-api
+cd packages/canarai-api
 uv sync
 
 # Update JavaScript dependencies
@@ -432,7 +432,7 @@ pnpm build:script
 If a release includes schema changes, run Alembic migrations:
 
 ```bash
-cd packages/canary-api
+cd packages/canarai-api
 uv run alembic upgrade head
 ```
 
@@ -448,15 +448,15 @@ Check the release notes for migration instructions before upgrading.
 
 **Check**:
 - Ensure port 8787 is not in use: `lsof -i :8787`
-- Check container logs: `docker compose -f docker/docker-compose.selfhosted.yml logs canary-api`
+- Check container logs: `docker compose -f docker/docker-compose.selfhosted.yml logs canarai-api`
 - Verify `DATABASE_URL` is valid and the database file path is writable
 
 ### Script not loading
 
-**Symptom**: The Canary script returns a 404.
+**Symptom**: The canar.ai script returns a 404.
 
 **Check**:
-- Verify the script is built: `ls packages/canary-script/dist/canary.js`
+- Verify the script is built: `ls packages/canarai-script/dist/canarai.js`
 - Ensure `SCRIPT_BASE_URL` matches the URL in your embed snippet
 - If behind a reverse proxy, verify the `/static/` location is forwarded correctly
 
@@ -465,8 +465,8 @@ Check the release notes for migration instructions before upgrading.
 **Symptom**: You visit the page but no data appears in the API.
 
 **Check**:
-- Open browser DevTools and check the Console for Canary debug messages (add `data-canary-debug="true"` to the script tag)
-- Verify the `data-canary-site-key` matches an active site in the database
+- Open browser DevTools and check the Console for canar.ai debug messages (add `data-canarai-debug="true"` to the script tag)
+- Verify the `data-canarai-site-key` matches an active site in the database
 - Check that CORS allows requests from your domain to the API
 - If testing manually, remember that human visitors (score < 0.50) do not trigger test injection or reporting
 

@@ -1,19 +1,19 @@
 version: "3.8"
 
 services:
-  canary-api:
+  canarai-api:
     build:
-      context: ../packages/canary-api
+      context: ../packages/canarai-api
       dockerfile: Dockerfile
     ports:
       - "8787:8787"
     environment:
-      DATABASE_URL: sqlite+aiosqlite:///data/canary.db
+      DATABASE_URL: sqlite+aiosqlite:///data/canarai.db
       API_SECRET_KEY: ${API_SECRET_KEY:-change-me-in-production}
       CORS_ORIGINS: "*"
       ENVIRONMENT: production
       SCRIPT_BASE_URL: http://localhost:8787
     volumes:
       - ./data:/app/data
-      - ./canary.toml:/app/canary.toml:ro
+      - ./canarai.toml:/app/canarai.toml:ro
     restart: unless-stopped

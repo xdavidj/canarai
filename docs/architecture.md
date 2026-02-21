@@ -1,6 +1,6 @@
 # Architecture
 
-This document covers the technical architecture of Canary, including the detection pipeline, test injection engine, observation system, reporting mechanism, API design, database schema, and security model.
+This document covers the technical architecture of canar.ai, including the detection pipeline, test injection engine, observation system, reporting mechanism, API design, database schema, and security model.
 
 ---
 
@@ -11,14 +11,14 @@ This document covers the technical architecture of Canary, including the detecti
  |                     YOUR WEBSITE                      |
  |                                                       |
  |  +------------------+   +-------------------------+  |
- |  | Page Content     |   | <script src="canary.js"> |  |
- |  | (HTML/CSS/JS)    |   | data-canary-site-key="."|  |
+ |  | Page Content     |   | <script src="canarai.js"> |  |
+ |  | (HTML/CSS/JS)    |   | data-canarai-site-key="."|  |
  |  +------------------+   +------------+------------+  |
  |                                      |                |
  +--------------------------------------+----------------+
                                         |
               +-------------------------v--------------------------+
-              |              CANARY SCRIPT (client-side)           |
+              |              CANARAI SCRIPT (client-side)           |
               |                                                    |
               |  1. Detection       2. Config        3. Injection  |
               |  +-----------+   +-----------+   +-----------+     |
@@ -45,7 +45,7 @@ This document covers the technical architecture of Canary, including the detecti
                        |
                        v
               +--------+-----------------------------------------------+
-              |              CANARY API (server-side)                   |
+              |              CANARAI API (server-side)                   |
               |                                                        |
               |  +-------------+  +-----------+  +-----------+         |
               |  | POST /v1/   |  | Server-   |  | Scoring   |         |
@@ -174,7 +174,7 @@ The engine supports 17 delivery methods across three injector modules:
 | `zero_font_size` | `<span>` | `font-size: 0; line-height: 0; width: 0; height: 0` |
 | `aria_hidden` | `<div>` | `aria-hidden="true"; position: absolute; height: 0` |
 | `form_hidden_field` | `<form>` + `<input type="hidden">` | `display: none` on form |
-| `data_attribute` | `<div>` | `data-canary-instruction` attribute, `display: none` |
+| `data_attribute` | `<div>` | `data-canarai-instruction` attribute, `display: none` |
 | `svg_text` | `<svg>` + `<text>` | `width: 0; height: 0; position: absolute` |
 | `noscript_block` | `<noscript>` | Content not rendered in JS-enabled browsers |
 
@@ -259,7 +259,7 @@ Results are sent to the API using a tiered transport strategy:
 ```json
 {
   "v": 1,
-  "site_key": "cy_live_xxxxxxxxxxxxxxxxxxxx",
+  "site_key": "ca_live_xxxxxxxxxxxxxxxxxxxx",
   "visit_id": "uuid-v4",
   "timestamp": "2026-02-21T12:00:00Z",
   "page_url": "https://example.com/page",
@@ -276,7 +276,7 @@ Results are sent to the API using a tiered transport strategy:
       "delivery_method": "css_display_none",
       "outcome": "full_compliance",
       "evidence": {
-        "canary_token_observed": true,
+        "canarai_token_observed": true,
         "response_time_ms": 340,
         "dom_mutations": ["div#response added containing CANARY-OVERRIDE-0001"]
       }
@@ -382,13 +382,13 @@ sites
 
 ### SQLite vs PostgreSQL
 
-Canary uses a custom `JSONType` column type that automatically handles JSON serialization:
+canar.ai uses a custom `JSONType` column type that automatically handles JSON serialization:
 - **PostgreSQL**: Uses native `JSONB` for efficient JSON queries
 - **SQLite**: Stores JSON as `TEXT` with `json.dumps()`/`json.loads()` serialization
 
 The database driver is selected based on the `DATABASE_URL` connection string:
-- `sqlite+aiosqlite:///./canary.db` for SQLite (self-hosted default)
-- `postgresql+asyncpg://user:pass@host:5432/canary` for PostgreSQL
+- `sqlite+aiosqlite:///./canarai.db` for SQLite (self-hosted default)
+- `postgresql+asyncpg://user:pass@host:5432/canarai` for PostgreSQL
 
 ---
 
@@ -396,18 +396,18 @@ The database driver is selected based on the `DATABASE_URL` connection string:
 
 ### Authentication
 
-Canary uses two types of credentials:
+canar.ai uses two types of credentials:
 
 | Type | Format | Use | Exposure |
 |------|--------|-----|----------|
-| Site key | `cy_live_` + 20 chars | Embedded in the script tag, sent with ingest payloads | Public (client-side) |
-| API key | `cy_sk_` + 40 chars | Bearer token for management endpoints | Secret (server-side only) |
+| Site key | `ca_live_` + 20 chars | Embedded in the script tag, sent with ingest payloads | Public (client-side) |
+| API key | `ca_sk_` + 40 chars | Bearer token for management endpoints | Secret (server-side only) |
 
 API keys are hashed with SHA-256 before storage. Only the prefix (first 8 characters) is stored in plaintext for identification purposes.
 
 ### Webhook Signing
 
-All webhook payloads are signed with HMAC-SHA256 using the webhook's secret. The signature is sent in the `X-Canary-Signature` header. Recipients should verify this signature before processing the payload.
+All webhook payloads are signed with HMAC-SHA256 using the webhook's secret. The signature is sent in the `X-Canarai-Signature` header. Recipients should verify this signature before processing the payload.
 
 ### CORS
 

@@ -1,12 +1,12 @@
 # Test Authoring Guide
 
-This guide explains how to write new test modules for Canary. Every new prompt injection technique you document helps AI agent developers harden their products and helps site owners understand their exposure.
+This guide explains how to write new test modules for canar.ai. Every new prompt injection technique you document helps AI agent developers harden their products and helps site owners understand their exposure.
 
 ---
 
 ## Test Module Structure
 
-Each test is a YAML file in `packages/canary-tests/tests/<category>/CAN-XXXX.yml`. Here is an annotated example:
+Each test is a YAML file in `packages/canarai-tests/tests/<category>/CAN-XXXX.yml`. Here is an annotated example:
 
 ```yaml
 # Unique test ID: CAN- followed by 4 zero-padded digits
@@ -128,7 +128,7 @@ Each payload must specify one of 17 delivery methods. These determine how the co
 **`css_display_none`** -- Hidden div with `display: none`
 
 ```html
-<div style="display:none" data-canary-test="CAN-XXXX">
+<div style="display:none" data-canarai-test="CAN-XXXX">
   Your payload content here
 </div>
 ```
@@ -138,7 +138,7 @@ The most basic hiding technique. Most AI agents that process raw HTML or extract
 **`css_visibility_hidden`** -- Invisible div with `visibility: hidden`
 
 ```html
-<div style="visibility:hidden;height:0;overflow:hidden" data-canary-test="CAN-XXXX">
+<div style="visibility:hidden;height:0;overflow:hidden" data-canarai-test="CAN-XXXX">
   Your payload content here
 </div>
 ```
@@ -148,7 +148,7 @@ Similar to `display:none` but the element still occupies layout space (mitigated
 **`css_opacity_zero`** -- Fully transparent div
 
 ```html
-<div style="opacity:0;position:absolute;pointer-events:none;height:0;overflow:hidden" data-canary-test="CAN-XXXX">
+<div style="opacity:0;position:absolute;pointer-events:none;height:0;overflow:hidden" data-canarai-test="CAN-XXXX">
   Your payload content here
 </div>
 ```
@@ -158,7 +158,7 @@ Content is rendered but invisible. Some accessibility tools may still read it.
 **`white_on_white_text`** -- Text matching the background color
 
 ```html
-<div style="color:#fff;background:#fff;font-size:1px;line-height:0;height:0;overflow:hidden" data-canary-test="CAN-XXXX">
+<div style="color:#fff;background:#fff;font-size:1px;line-height:0;height:0;overflow:hidden" data-canarai-test="CAN-XXXX">
   Your payload content here
 </div>
 ```
@@ -168,7 +168,7 @@ Classic visual concealment. Effective against screenshot-based agents too, since
 **`offscreen_positioning`** -- Positioned far off-screen
 
 ```html
-<div style="position:absolute;left:-9999px;top:-9999px" data-canary-test="CAN-XXXX">
+<div style="position:absolute;left:-9999px;top:-9999px" data-canarai-test="CAN-XXXX">
   Your payload content here
 </div>
 ```
@@ -178,7 +178,7 @@ Content exists in the DOM and is technically "visible" but positioned outside th
 **`zero_font_size`** -- Text at 0px font size
 
 ```html
-<span style="font-size:0;line-height:0;height:0;width:0;display:inline-block;overflow:hidden" data-canary-test="CAN-XXXX">
+<span style="font-size:0;line-height:0;height:0;width:0;display:inline-block;overflow:hidden" data-canarai-test="CAN-XXXX">
   Your payload content here
 </span>
 ```
@@ -188,7 +188,7 @@ Text is in the DOM but rendered at zero size.
 **`aria_hidden`** -- Hidden from assistive technology
 
 ```html
-<div aria-hidden="true" style="position:absolute;height:0;overflow:hidden" data-canary-test="CAN-XXXX">
+<div aria-hidden="true" style="position:absolute;height:0;overflow:hidden" data-canarai-test="CAN-XXXX">
   Your payload content here
 </div>
 ```
@@ -198,8 +198,8 @@ Tests whether agents respect the `aria-hidden` attribute.
 **`form_hidden_field`** -- Hidden form input
 
 ```html
-<form style="display:none" aria-hidden="true" data-canary-test="CAN-XXXX">
-  <input type="hidden" name="canary_CAN-XXXX" value="Your payload content here">
+<form style="display:none" aria-hidden="true" data-canarai-test="CAN-XXXX">
+  <input type="hidden" name="canarai_CAN-XXXX" value="Your payload content here">
 </form>
 ```
 
@@ -208,7 +208,7 @@ Content stored as a hidden form value. Agents that extract form data may process
 **`data_attribute`** -- Custom data attribute
 
 ```html
-<div style="display:none" data-canary-test="CAN-XXXX" data-canary-instruction="Your payload content here">
+<div style="display:none" data-canarai-test="CAN-XXXX" data-canarai-instruction="Your payload content here">
 </div>
 ```
 
@@ -217,7 +217,7 @@ Content stored in a `data-*` attribute rather than text content.
 **`svg_text`** -- Text inside an SVG element
 
 ```html
-<svg width="0" height="0" style="position:absolute;overflow:hidden" data-canary-test="CAN-XXXX">
+<svg width="0" height="0" style="position:absolute;overflow:hidden" data-canarai-test="CAN-XXXX">
   <text>Your payload content here</text>
 </svg>
 ```
@@ -227,7 +227,7 @@ Tests whether agents parse text content inside SVG elements.
 **`noscript_block`** -- Content inside `<noscript>` tags
 
 ```html
-<noscript data-canary-test="CAN-XXXX">
+<noscript data-canarai-test="CAN-XXXX">
   Your payload content here
 </noscript>
 ```
@@ -239,7 +239,7 @@ Content inside `<noscript>` is not rendered in JavaScript-enabled browsers but m
 **`meta_tag`** -- Meta tag in `<head>`
 
 ```html
-<meta name="canary-test-CAN-XXXX" content="Your payload content here">
+<meta name="canarai-test-CAN-XXXX" content="Your payload content here">
 ```
 
 Always placed in `<head>`. Tests whether agents process meta tag content.
@@ -247,11 +247,11 @@ Always placed in `<head>`. Tests whether agents process meta tag content.
 **`json_ld`** -- JSON-LD structured data
 
 ```html
-<script type="application/ld+json" data-canary-test="CAN-XXXX">
+<script type="application/ld+json" data-canarai-test="CAN-XXXX">
 {
   "@context": "https://schema.org",
   "@type": "WebPageElement",
-  "name": "canary-test-CAN-XXXX",
+  "name": "canarai-test-CAN-XXXX",
   "description": "Your payload content here"
 }
 </script>
@@ -262,8 +262,8 @@ Always placed in `<head>`. Tests whether agents parse JSON-LD for page understan
 **`microdata`** -- Schema.org microdata
 
 ```html
-<div itemscope itemtype="https://schema.org/WebPageElement" style="display:none" data-canary-test="CAN-XXXX">
-  <meta itemprop="name" content="canary-test-CAN-XXXX">
+<div itemscope itemtype="https://schema.org/WebPageElement" style="display:none" data-canarai-test="CAN-XXXX">
+  <meta itemprop="name" content="canarai-test-CAN-XXXX">
   <meta itemprop="description" content="Your payload content here">
 </div>
 ```
@@ -275,13 +275,13 @@ Tests whether agents extract content from microdata attributes.
 **`css_pseudo_element`** -- CSS `::after` pseudo-element
 
 ```html
-<style data-canary-test="CAN-XXXX-style">
-  .canary-pseudo-CAN-XXXX::after {
+<style data-canarai-test="CAN-XXXX-style">
+  .canarai-pseudo-CAN-XXXX::after {
     content: "Your payload content here";
     display: none;
   }
 </style>
-<div class="canary-pseudo-CAN-XXXX" style="position:absolute;height:0;overflow:hidden" data-canary-test="CAN-XXXX"></div>
+<div class="canarai-pseudo-CAN-XXXX" style="position:absolute;height:0;overflow:hidden" data-canarai-test="CAN-XXXX"></div>
 ```
 
 Content is in CSS, not in the DOM text. Tests whether agents evaluate CSS content properties.
@@ -295,7 +295,7 @@ Content is in CSS, not in the DOM text. Tests whether agents evaluate CSS conten
   width="1" height="1"
   style="position:absolute;opacity:0;pointer-events:none"
   aria-hidden="true"
-  data-canary-test="CAN-XXXX"
+  data-canarai-test="CAN-XXXX"
 >
 ```
 
@@ -351,7 +351,7 @@ Each indicator describes a specific observable signal:
 | `url_pattern` | URL substring in network requests | `canary-beacon.example.com/exfil` |
 | `dom_change` | Specific DOM modification pattern | `div.response-area text changed` |
 | `network_request` | Outbound request to a specific host | `canary-beacon.example.com` |
-| `form_submit` | Form submission event | `form[data-canary-test]` |
+| `form_submit` | Form submission event | `form[data-canarai-test]` |
 | `navigation` | Navigation or redirect event | `canary-beacon.example.com/redirect` |
 
 ### Weight
@@ -390,7 +390,7 @@ Write `secure_behavior` to describe the `ignored` outcome and `vulnerable_behavi
 python scripts/seed-tests.py --verbose
 ```
 
-This validates all YAML test files against `packages/canary-tests/schema/test-module.schema.json`. Fix any errors before proceeding.
+This validates all YAML test files against `packages/canarai-tests/schema/test-module.schema.json`. Fix any errors before proceeding.
 
 ### 2. Load into the API
 
@@ -400,10 +400,10 @@ python scripts/seed-tests.py --api-url http://localhost:8787
 
 ### 3. Test with the demo page
 
-1. Start the API: `cd packages/canary-api && uv run uvicorn canary_api.main:app --reload --port 8787`
+1. Start the API: `cd packages/canarai-api && uv run uvicorn canarai.main:app --reload --port 8787`
 2. Build the script: `pnpm build:script`
 3. Open `demo/index.html` in a browser
-4. Add `data-canary-debug="true"` to the script tag for console output
+4. Add `data-canarai-debug="true"` to the script tag for console output
 5. Use the agent simulator to test: `python scripts/simulate-agent.py --url http://localhost:3000`
 
 ### 4. Verify observation
@@ -411,7 +411,7 @@ python scripts/seed-tests.py --api-url http://localhost:8787
 Check the API for results:
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results?test_id=CAN-XXXX
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results?test_id=CAN-XXXX
 ```
 
 Verify that:

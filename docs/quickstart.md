@@ -1,6 +1,6 @@
 # Quickstart Guide
 
-This guide walks you through setting up Canary, embedding the detection script on a page, and viewing your first test results.
+This guide walks you through setting up canar.ai, embedding the detection script on a page, and viewing your first test results.
 
 ---
 
@@ -24,8 +24,8 @@ This guide walks you through setting up Canary, embedding the detection script o
 ### Clone the repository
 
 ```bash
-git clone https://github.com/canary-security/canary.git
-cd canary
+git clone https://github.com/xdavidj/canarai.git
+cd canarai
 ```
 
 ### Start the services
@@ -34,7 +34,7 @@ cd canary
 docker compose -f docker/docker-compose.selfhosted.yml up -d
 ```
 
-This starts the Canary API on port `8787` with an SQLite database. Data is persisted in `docker/data/`.
+This starts the canar.ai API on port `8787` with an SQLite database. Data is persisted in `docker/data/`.
 
 Verify the server is running:
 
@@ -50,8 +50,8 @@ python scripts/generate-api-key.py --api-url http://localhost:8787 --domain your
 ```
 
 This outputs:
-- A **site key** (`cy_live_...`) -- safe to embed in client-side code
-- An **API key** (`cy_sk_...`) -- keep this secret, use it for management API calls
+- A **site key** (`ca_live_...`) -- safe to embed in client-side code
+- An **API key** (`ca_sk_...`) -- keep this secret, use it for management API calls
 - An embed snippet you can copy into your HTML
 
 ### Create a site via the API
@@ -78,9 +78,9 @@ Add this script tag to any page you want to monitor:
 
 ```html
 <script
-  src="http://localhost:8787/static/canary.js"
-  data-canary-site-key="cy_live_xxxxxxxxxxxxxxxxxxxx"
-  data-canary-endpoint="http://localhost:8787"
+  src="http://localhost:8787/static/canarai.js"
+  data-canarai-site-key="ca_live_xxxxxxxxxxxxxxxxxxxx"
+  data-canarai-endpoint="http://localhost:8787"
 ></script>
 ```
 
@@ -90,25 +90,25 @@ Replace the site key with the one returned from the previous step.
 
 | Attribute | Required | Description |
 |-----------|----------|-------------|
-| `data-canary-site-key` | Yes | Your site key |
-| `data-canary-endpoint` | Yes | API base URL |
-| `data-canary-tests` | No | Comma-separated test IDs to enable (overrides site config) |
-| `data-canary-threshold` | No | Detection threshold, 0.0-1.0 (overrides site config) |
-| `data-canary-reporting` | No | Reporting mode: `beacon`, `fetch`, or `pixel` |
-| `data-canary-debug` | No | Set to `true` for console logging |
+| `data-canarai-site-key` | Yes | Your site key |
+| `data-canarai-endpoint` | Yes | API base URL |
+| `data-canarai-tests` | No | Comma-separated test IDs to enable (overrides site config) |
+| `data-canarai-threshold` | No | Detection threshold, 0.0-1.0 (overrides site config) |
+| `data-canarai-reporting` | No | Reporting mode: `beacon`, `fetch`, or `pixel` |
+| `data-canarai-debug` | No | Set to `true` for console logging |
 
 ### Visit your site
 
-Open the page in a browser. Since you are a human user, Canary should detect you as `human` and not inject tests. To test the full pipeline, use the agent simulator (see Step 4 below).
+Open the page in a browser. Since you are a human user, canar.ai should detect you as `human` and not inject tests. To test the full pipeline, use the agent simulator (see Step 4 below).
 
 ### Query results
 
 ```bash
 # List all visits
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results
 
 # Get aggregate summary
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results/summary
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results/summary
 ```
 
 ---
@@ -118,14 +118,14 @@ curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results/summa
 ### Clone and install dependencies
 
 ```bash
-git clone https://github.com/canary-security/canary.git
-cd canary
+git clone https://github.com/xdavidj/canarai.git
+cd canarai
 
 # Install JavaScript dependencies (for the script package)
 pnpm install
 
 # Install Python dependencies (for the API)
-cd packages/canary-api
+cd packages/canarai-api
 uv sync
 cd ../..
 ```
@@ -133,8 +133,8 @@ cd ../..
 ### Run the API
 
 ```bash
-cd packages/canary-api
-uv run uvicorn canary_api.main:app --reload --port 8787
+cd packages/canarai-api
+uv run uvicorn canarai.main:app --reload --port 8787
 ```
 
 The API starts on `http://localhost:8787` with SQLite and auto-reload enabled.
@@ -145,7 +145,7 @@ The API starts on `http://localhost:8787` with SQLite and auto-reload enabled.
 pnpm build:script
 ```
 
-The bundled IIFE script is output to `packages/canary-script/dist/canary.js`.
+The bundled IIFE script is output to `packages/canarai-script/dist/canarai.js`.
 
 For development with file watching:
 
@@ -155,7 +155,7 @@ pnpm dev:script
 
 ### Open the demo page
 
-Open `demo/index.html` in your browser. The demo page has the Canary script embedded and pointed at `http://localhost:8787`.
+Open `demo/index.html` in your browser. The demo page has the canar.ai script embedded and pointed at `http://localhost:8787`.
 
 ### Validate test modules
 
@@ -163,7 +163,7 @@ Open `demo/index.html` in your browser. The demo page has the Canary script embe
 python scripts/seed-tests.py
 ```
 
-This loads all YAML test files from `packages/canary-tests/tests/`, validates them against the JSON Schema, and prints a summary.
+This loads all YAML test files from `packages/canarai-tests/tests/`, validates them against the JSON Schema, and prints a summary.
 
 To also upload them to a running API:
 
@@ -193,7 +193,7 @@ python scripts/simulate-agent.py --url http://localhost:3000 --agent "GPTBot"
 The simulator:
 1. Launches a headless Chromium instance with the specified agent User-Agent string
 2. Navigates to the target URL
-3. Waits for the Canary script to execute and report results
+3. Waits for the canar.ai script to execute and report results
 4. Prints a summary of what was detected and injected
 
 ### Check results
@@ -201,7 +201,7 @@ The simulator:
 After the simulator runs, query the API to see what was captured:
 
 ```bash
-curl -H "Authorization: Bearer cy_sk_..." http://localhost:8787/v1/results?classification=confirmed_agent
+curl -H "Authorization: Bearer ca_sk_..." http://localhost:8787/v1/results?classification=confirmed_agent
 ```
 
 You should see the simulated visit with its detection signals and test outcomes.
@@ -213,7 +213,7 @@ You should see the simulated visit with its detection signals and test outcomes.
 ### API tests (Python)
 
 ```bash
-cd packages/canary-api
+cd packages/canarai-api
 uv run pytest
 ```
 

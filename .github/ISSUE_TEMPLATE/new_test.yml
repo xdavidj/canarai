@@ -1,5 +1,5 @@
 name: New Test Module
-description: Propose a new prompt injection test module for Canary
+description: Propose a new prompt injection test module for canar.ai
 title: "[Test]: "
 labels: ["new-test", "triage"]
 assignees: []
@@ -8,9 +8,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Propose a new test module to be added to the Canary test library. Each test should target a specific prompt injection vector or AI agent behavior.
+        Propose a new test module to be added to the canar.ai test library. Each test should target a specific prompt injection vector or AI agent behavior.
 
-        Before submitting, please review the [existing tests](../packages/canary-tests/tests/) and the [test module schema](../packages/canary-tests/schema/test-module.schema.json) to avoid duplicates and ensure compatibility.
+        Before submitting, please review the [existing tests](../packages/canarai-tests/tests/) and the [test module schema](../packages/canarai-tests/schema/test-module.schema.json) to avoid duplicates and ensure compatibility.
 
   - type: input
     id: test-name

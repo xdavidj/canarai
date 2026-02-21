@@ -28,25 +28,25 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        working-directory: packages/canary-script
+        working-directory: packages/canarai-script
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        working-directory: packages/canary-script
+        working-directory: packages/canarai-script
         run: pnpm build
 
-      - name: Upload canary.js artifact
+      - name: Upload canarai.js artifact
         uses: actions/upload-artifact@v4
         with:
-          name: canary-js-${{ github.ref_name }}
-          path: packages/canary-script/dist/canary.js
+          name: canarai-js-${{ github.ref_name }}
+          path: packages/canarai-script/dist/canarai.js
           retention-days: 90
 
-      # TODO: Publish to CDN (e.g., cdn.canary.dev/v1/canary.js)
+      # TODO: Publish to CDN (e.g., cdn.canarai.dev/v1/canarai.js)
       # - name: Upload to CDN
       #   run: |
-      #     aws s3 cp packages/canary-script/dist/canary.js \
-      #       s3://canary-cdn/v1/canary.js \
+      #     aws s3 cp packages/canarai-script/dist/canarai.js \
+      #       s3://canarai-cdn/v1/canarai.js \
       #       --content-type "application/javascript" \
       #       --cache-control "public, max-age=3600"
 
@@ -73,17 +73,17 @@ jobs:
       - name: Build and push API image
         uses: docker/build-push-action@v6
         with:
-          context: packages/canary-api
-          file: packages/canary-api/Dockerfile
+          context: packages/canarai-api
+          file: packages/canarai-api/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/canary-api:${{ steps.version.outputs.VERSION }}
-            ghcr.io/${{ github.repository }}/canary-api:latest
+            ghcr.io/${{ github.repository }}/canarai-api:${{ steps.version.outputs.VERSION }}
+            ghcr.io/${{ github.repository }}/canarai-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: |
-            org.opencontainers.image.title=canary-api
-            org.opencontainers.image.description=Canary API - AI Agent Prompt Injection Testing Backend
+            org.opencontainers.image.title=canarai-api
+            org.opencontainers.image.description=canar.ai API - AI Agent Prompt Injection Testing Backend
             org.opencontainers.image.version=${{ steps.version.outputs.VERSION }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
 
@@ -93,4 +93,4 @@ jobs:
       #   with:
       #     generate_release_notes: true
       #     files: |
-      #       packages/canary-script/dist/canary.js
+      #       packages/canarai-script/dist/canarai.js

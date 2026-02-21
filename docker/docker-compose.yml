@@ -1,14 +1,14 @@
 version: "3.8"
 
 services:
-  canary-api:
+  canarai-api:
     build:
-      context: ../packages/canary-api
+      context: ../packages/canarai-api
       dockerfile: Dockerfile
     ports:
       - "8787:8787"
     environment:
-      DATABASE_URL: postgresql+asyncpg://canary:canary@postgres:5432/canary
+      DATABASE_URL: postgresql+asyncpg://canarai:canarai@postgres:5432/canarai
       API_SECRET_KEY: ${API_SECRET_KEY:-change-me-in-production}
       CORS_ORIGINS: "*"
       ENVIRONMENT: production
@@ -20,13 +20,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: canary
-      POSTGRES_PASSWORD: canary
-      POSTGRES_DB: canary
+      POSTGRES_USER: canarai
+      POSTGRES_PASSWORD: canarai
+      POSTGRES_DB: canarai
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U canary"]
+      test: ["CMD-SHELL", "pg_isready -U canarai"]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -1,6 +1,6 @@
-# Contributing to Canary
+# Contributing to canar.ai
 
-Thank you for your interest in contributing to Canary. This project aims to improve the security of AI agents interacting with web content, and every contribution -- whether a new test module, a bug fix, or a documentation improvement -- helps the entire ecosystem.
+Thank you for your interest in contributing to canar.ai. This project aims to improve the security of AI agents interacting with web content, and every contribution -- whether a new test module, a bug fix, or a documentation improvement -- helps the entire ecosystem.
 
 ---
 
@@ -31,14 +31,14 @@ We welcome the following types of contributions:
 ### Clone and install
 
 ```bash
-git clone https://github.com/canary-security/canary.git
-cd canary
+git clone https://github.com/xdavidj/canarai.git
+cd canarai
 
 # Install JavaScript dependencies
 pnpm install
 
 # Install Python dependencies
-cd packages/canary-api
+cd packages/canarai-api
 uv sync --extra dev
 cd ../..
 ```
@@ -50,7 +50,7 @@ cd ../..
 pnpm build:script
 
 # Run API tests
-cd packages/canary-api && uv run pytest
+cd packages/canarai-api && uv run pytest
 
 # Validate test modules
 python scripts/seed-tests.py --verbose
@@ -61,23 +61,23 @@ python scripts/seed-tests.py --verbose
 ## Project Structure
 
 ```
-canary/
+canarai/
   packages/
-    canary-script/        # Embeddable TypeScript script (IIFE bundle)
+    canarai-script/        # Embeddable TypeScript script (IIFE bundle)
       src/
         detect/           # Agent detection (UA, fingerprint, behavioral)
         inject/           # Test payload injection (DOM, meta, style)
         observe/          # MutationObserver, network monitoring
         types.ts          # Shared TypeScript types
         config.ts         # Configuration resolution
-    canary-api/           # FastAPI backend
-      src/canary_api/
+    canarai-api/           # FastAPI backend
+      src/canarai/
         models/           # SQLAlchemy ORM models
         schemas/          # Pydantic request/response schemas
         services/         # Business logic (detection, scoring, alerting)
         db/               # Database engine and session management
         config.py         # Environment-based settings
-    canary-tests/         # YAML test module library
+    canarai-tests/         # YAML test module library
       tests/
         instruction-override/
         data-exfiltration/
@@ -127,14 +127,14 @@ The API uses FastAPI with async SQLAlchemy and Pydantic.
 **Running the API in development:**
 
 ```bash
-cd packages/canary-api
-uv run uvicorn canary_api.main:app --reload --port 8787
+cd packages/canarai-api
+uv run uvicorn canarai.main:app --reload --port 8787
 ```
 
 **Running tests:**
 
 ```bash
-cd packages/canary-api
+cd packages/canarai-api
 uv run pytest
 uv run pytest -v            # verbose output
 uv run pytest -x            # stop on first failure
@@ -182,7 +182,7 @@ pnpm dev:script             # Watch mode
 
 ```bash
 # API tests
-cd packages/canary-api && uv run pytest
+cd packages/canarai-api && uv run pytest
 
 # Script tests
 pnpm test:script
@@ -221,7 +221,7 @@ async def test_health(client: AsyncClient):
 The project uses [Ruff](https://docs.astral.sh/ruff/) for linting and formatting:
 
 ```bash
-cd packages/canary-api
+cd packages/canarai-api
 
 # Lint
 uv run ruff check .
@@ -285,9 +285,9 @@ Include:
 
 ### Reporting vulnerabilities
 
-If you discover a security vulnerability in Canary, please report it **privately**:
+If you discover a security vulnerability in canar.ai, please report it **privately**:
 
-- Use [GitHub Security Advisories](https://github.com/canary-security/canary/security/advisories/new)
+- Use [GitHub Security Advisories](https://github.com/xdavidj/canarai/security/advisories/new)
 - Or email: security@canar.ai
 
 **Do not create public GitHub issues for security vulnerabilities.**
@@ -320,4 +320,4 @@ Unacceptable behavior can be reported to conduct@canar.ai. All reports will be r
 
 ## Questions?
 
-If you have questions about contributing, open a [GitHub Discussion](https://github.com/canary-security/canary/discussions) or reach out to the maintainers. We are happy to help you get started.
+If you have questions about contributing, open a [GitHub Discussion](https://github.com/xdavidj/canarai/discussions) or reach out to the maintainers. We are happy to help you get started.

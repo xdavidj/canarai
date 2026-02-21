@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-seed-tests.py — Load and validate Canary test modules from YAML files.
+seed-tests.py — Load and validate canar.ai test modules from YAML files.
 
-Reads all YAML test files from packages/canary-tests/tests/,
+Reads all YAML test files from packages/canarai-tests/tests/,
 validates each against the JSON Schema, prints a summary,
 and optionally POSTs them to the API.
 
@@ -126,19 +126,19 @@ def find_project_root() -> Path:
     script_dir = Path(__file__).resolve().parent
     # scripts/ is one level below root
     root = script_dir.parent
-    if (root / "packages" / "canary-tests").exists():
+    if (root / "packages" / "canarai-tests").exists():
         return root
     # Fallback: try cwd
     cwd = Path.cwd()
-    if (cwd / "packages" / "canary-tests").exists():
+    if (cwd / "packages" / "canarai-tests").exists():
         return cwd
-    print(colored("Error: Cannot find project root (packages/canary-tests not found)", C.RED))
+    print(colored("Error: Cannot find project root (packages/canarai-tests not found)", C.RED))
     sys.exit(1)
 
 
 def load_schema(root: Path) -> dict:
     """Load the JSON Schema for test modules."""
-    schema_path = root / "packages" / "canary-tests" / "schema" / "test-module.schema.json"
+    schema_path = root / "packages" / "canarai-tests" / "schema" / "test-module.schema.json"
     if not schema_path.exists():
         print(colored(f"Error: Schema not found at {schema_path}", C.RED))
         sys.exit(1)
@@ -149,7 +149,7 @@ def load_schema(root: Path) -> dict:
 
 def find_test_files(root: Path) -> list[Path]:
     """Find all YAML test files recursively."""
-    tests_dir = root / "packages" / "canary-tests" / "tests"
+    tests_dir = root / "packages" / "canarai-tests" / "tests"
     if not tests_dir.exists():
         print(colored(f"Error: Tests directory not found at {tests_dir}", C.RED))
         sys.exit(1)
@@ -198,7 +198,7 @@ def post_test_to_api(test_data: dict, api_url: str) -> tuple[bool, str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Load and validate Canary test modules from YAML files"
+        description="Load and validate canar.ai test modules from YAML files"
     )
     parser.add_argument(
         "--api-url",
@@ -223,7 +223,7 @@ def main() -> None:
         sys.exit(1)
 
     print(colored(f"\n{'=' * 60}", C.DIM))
-    print(colored("  Canary Test Module Loader", C.BOLD))
+    print(colored("  canar.ai Test Module Loader", C.BOLD))
     print(colored(f"{'=' * 60}\n", C.DIM))
     print(f"  Project root:  {colored(str(root), C.CYAN)}")
     print(f"  Test files:    {colored(str(len(test_files)), C.CYAN)}")
