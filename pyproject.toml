@@ -1,0 +1,22 @@
+[project]
+name = "canary"
+version = "0.1.0"
+description = "AI Agent Prompt Injection Testing Framework"
+requires-python = ">=3.11"
+license = "MIT"
+
+[tool.uv.workspace]
+members = ["packages/canary-api"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true

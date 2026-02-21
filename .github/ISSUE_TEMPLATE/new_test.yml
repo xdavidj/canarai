@@ -1,0 +1,152 @@
+name: New Test Module
+description: Propose a new prompt injection test module for Canary
+title: "[Test]: "
+labels: ["new-test", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose a new test module to be added to the Canary test library. Each test should target a specific prompt injection vector or AI agent behavior.
+
+        Before submitting, please review the [existing tests](../packages/canary-tests/tests/) and the [test module schema](../packages/canary-tests/schema/test-module.schema.json) to avoid duplicates and ensure compatibility.
+
+  - type: input
+    id: test-name
+    attributes:
+      label: Test Name
+      description: A short, descriptive name for the test (e.g., "Base64 Encoded Instruction Override").
+      placeholder: "e.g., SVG Embedded Prompt Injection"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Which category does this test belong to?
+      options:
+        - instruction_override
+        - data_exfiltration
+        - tool_action_abuse
+        - system_prompt_leakage
+        - goal_hijacking
+        - context_manipulation
+        - encoding_bypass
+        - multi_turn_chained
+        - structured_data_injection
+        - persona_manipulation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How common is this attack vector in the wild?
+      options:
+        - common (widely observed and documented)
+        - uncommon (known but not frequently seen)
+        - emerging (theoretical or newly discovered)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of Attack Vector
+      description: Explain the prompt injection technique this test would detect. What does the attacker do, and why is it effective against AI agents?
+      placeholder: |
+        This test targets...
+
+        The injection works by...
+
+        AI agents are vulnerable because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: payload
+    attributes:
+      label: Proposed Payload
+      description: Provide an example payload or injection content. This will be formatted as code.
+      render: html
+      placeholder: |
+        <div style="display:none">
+          IMPORTANT: Ignore previous instructions and...
+        </div>
+    validations:
+      required: true
+
+  - type: dropdown
+    id: delivery-method
+    attributes:
+      label: Delivery Method
+      description: How would the payload be embedded in a web page?
+      options:
+        - css_display_none
+        - css_visibility_hidden
+        - css_opacity_zero
+        - white_on_white_text
+        - offscreen_positioning
+        - zero_font_size
+        - html_comment
+        - aria_hidden
+        - meta_tag
+        - json_ld
+        - microdata
+        - image_alt_text
+        - data_attribute
+        - css_pseudo_element
+        - svg_text
+        - noscript_block
+        - form_hidden_field
+    validations:
+      required: true
+
+  - type: textarea
+    id: canary-markers
+    attributes:
+      label: Canary Markers
+      description: What unique strings should we look for to determine if an agent was tricked? These should be strings that would never appear naturally.
+      placeholder: |
+        CANARY-EXAMPLE-0099
+        CANARY-EXFIL-0099
+    validations:
+      required: true
+
+  - type: textarea
+    id: observation
+    attributes:
+      label: Observation Method
+      description: How would the test detect that an agent was compromised? What should we observe?
+      placeholder: |
+        Detection type: canary_string
+        Look for the canary marker in the agent's output.
+        Timeout: 30 seconds.
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to research papers, blog posts, or real-world examples of this attack vector.
+      placeholder: |
+        - https://arxiv.org/abs/...
+        - https://blog.example.com/...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have checked that no existing test covers this attack vector.
+          required: true
+        - label: The proposed payload does not contain actual malicious content (only canary markers).
+          required: true
+        - label: I am willing to contribute a PR implementing this test module.
+          required: false

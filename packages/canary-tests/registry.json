@@ -1,0 +1,146 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-02-21",
+  "tests": [
+    {
+      "id": "CAN-0001",
+      "name": "Basic Instruction Override",
+      "category": "instruction_override",
+      "severity": "common",
+      "file": "tests/instruction-override/CAN-0001.yml"
+    },
+    {
+      "id": "CAN-0002",
+      "name": "Override via HTML Comment",
+      "category": "instruction_override",
+      "severity": "common",
+      "file": "tests/instruction-override/CAN-0002.yml"
+    },
+    {
+      "id": "CAN-0003",
+      "name": "Authority Escalation via White-on-White Text",
+      "category": "instruction_override",
+      "severity": "common",
+      "file": "tests/instruction-override/CAN-0003.yml"
+    },
+    {
+      "id": "CAN-0004",
+      "name": "Markdown Image Exfiltration",
+      "category": "data_exfiltration",
+      "severity": "common",
+      "file": "tests/data-exfiltration/CAN-0004.yml"
+    },
+    {
+      "id": "CAN-0005",
+      "name": "Hidden Form Field Exfiltration",
+      "category": "data_exfiltration",
+      "severity": "uncommon",
+      "file": "tests/data-exfiltration/CAN-0005.yml"
+    },
+    {
+      "id": "CAN-0006",
+      "name": "Form Auto-Fill Abuse",
+      "category": "tool_action_abuse",
+      "severity": "common",
+      "file": "tests/tool-abuse/CAN-0006.yml"
+    },
+    {
+      "id": "CAN-0007",
+      "name": "Navigation Hijack via Data Attribute",
+      "category": "tool_action_abuse",
+      "severity": "uncommon",
+      "file": "tests/tool-abuse/CAN-0007.yml"
+    },
+    {
+      "id": "CAN-0008",
+      "name": "Semantic System Prompt Leak",
+      "category": "system_prompt_leakage",
+      "severity": "common",
+      "file": "tests/system-prompt-leak/CAN-0008.yml"
+    },
+    {
+      "id": "CAN-0009",
+      "name": "Base64 Encoding Bypass",
+      "category": "encoding_bypass",
+      "severity": "uncommon",
+      "file": "tests/encoding-bypass/CAN-0009.yml"
+    },
+    {
+      "id": "CAN-0010",
+      "name": "Fake Product Information",
+      "category": "context_manipulation",
+      "severity": "common",
+      "file": "tests/context-manipulation/CAN-0010.yml"
+    },
+    {
+      "id": "CAN-0011",
+      "name": "Fake Urgency and Scareware",
+      "category": "context_manipulation",
+      "severity": "common",
+      "file": "tests/context-manipulation/CAN-0011.yml"
+    },
+    {
+      "id": "CAN-0012",
+      "name": "JSON-LD Injection",
+      "category": "structured_data_injection",
+      "severity": "uncommon",
+      "file": "tests/structured-data/CAN-0012.yml"
+    },
+    {
+      "id": "CAN-0013",
+      "name": "Microdata Injection",
+      "category": "structured_data_injection",
+      "severity": "uncommon",
+      "file": "tests/structured-data/CAN-0013.yml"
+    },
+    {
+      "id": "CAN-0014",
+      "name": "Persona Role Reassignment",
+      "category": "persona_manipulation",
+      "severity": "common",
+      "file": "tests/persona-manipulation/CAN-0014.yml"
+    },
+    {
+      "id": "CAN-0015",
+      "name": "Goal Hijacking via Offscreen Text",
+      "category": "goal_hijacking",
+      "severity": "common",
+      "file": "tests/goal-hijacking/CAN-0015.yml"
+    },
+    {
+      "id": "CAN-0016",
+      "name": "Multi-Turn Seed and Exploit Chain",
+      "category": "multi_turn_chained",
+      "severity": "uncommon",
+      "file": "tests/multi-turn/CAN-0016.yml"
+    },
+    {
+      "id": "CAN-0017",
+      "name": "Multilingual Bypass (Mandarin)",
+      "category": "encoding_bypass",
+      "severity": "emerging",
+      "file": "tests/emerging/CAN-0017.yml"
+    },
+    {
+      "id": "CAN-0018",
+      "name": "SVG Text Injection",
+      "category": "structured_data_injection",
+      "severity": "emerging",
+      "file": "tests/emerging/CAN-0018.yml"
+    },
+    {
+      "id": "CAN-0019",
+      "name": "CSS Pseudo-Element Injection",
+      "category": "encoding_bypass",
+      "severity": "emerging",
+      "file": "tests/emerging/CAN-0019.yml"
+    },
+    {
+      "id": "CAN-0020",
+      "name": "Indirect Hypothetical Framing",
+      "category": "context_manipulation",
+      "severity": "emerging",
+      "file": "tests/emerging/CAN-0020.yml"
+    }
+  ]
+}

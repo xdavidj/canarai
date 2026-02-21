@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  canary-api:
+    build:
+      context: ../packages/canary-api
+      dockerfile: Dockerfile
+    ports:
+      - "8787:8787"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://canary:canary@postgres:5432/canary
+      API_SECRET_KEY: ${API_SECRET_KEY:-change-me-in-production}
+      CORS_ORIGINS: "*"
+      ENVIRONMENT: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: canary
+      POSTGRES_PASSWORD: canary
+      POSTGRES_DB: canary
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U canary"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  pgdata:

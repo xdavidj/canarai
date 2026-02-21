@@ -1,0 +1,10 @@
+[canary]
+# Site configuration
+domain = "example.com"
+enabled_tests = ["CAN-0001", "CAN-0002", "CAN-0003", "CAN-0004", "CAN-0008"]
+detection_threshold = 0.70
+
+[canary.webhook]
+url = ""
+events = ["agent_detected", "test_failed"]
+secret = "change-me"
