@@ -427,3 +427,4 @@ export type {
   DeliveryMethod,
   Placement,
 } from './types';
+export { isValidTestPayload, generateVisitId, generateCanaraiMarker };

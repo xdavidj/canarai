@@ -61,6 +61,7 @@ async def dispatch_webhook(
         webhook_id=webhook.id,
         event_type=event_type,
         payload=payload,
+        attempt=1,
     )
 
     headers = {

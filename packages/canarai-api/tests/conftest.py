@@ -11,6 +11,15 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from canarai.dependencies import get_db
 from canarai.main import create_app
 from canarai.models import Base
+from canarai.routers.sites import _site_creation_limits
+
+
+@pytest.fixture(autouse=True)
+def _clear_rate_limiter():
+    """Clear the site creation rate limiter before every test."""
+    _site_creation_limits.clear()
+    yield
+    _site_creation_limits.clear()
 
 
 @pytest.fixture(scope="session")
@@ -68,3 +77,34 @@ async def client(db_engine) -> AsyncGenerator[AsyncClient, None]:
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
+
+
+@pytest_asyncio.fixture
+async def site_with_key(client: AsyncClient) -> dict:
+    """Create a site via POST /v1/sites and return key material.
+
+    Returns a dict with keys: ``site_key``, ``api_key``, ``site_id``.
+    """
+    response = await client.post(
+        "/v1/sites",
+        json={"domain": "fixture-site.example.com"},
+    )
+    assert response.status_code == 201, response.text
+    data = response.json()
+    return {
+        "site_key": data["site"]["site_key"],
+        "api_key": data["api_key"],
+        "site_id": data["site"]["id"],
+    }
+
+
+@pytest_asyncio.fixture
+async def authenticated_client(
+    client: AsyncClient, site_with_key: dict
+) -> tuple[AsyncClient, dict]:
+    """Return (client, site_data) where site_data contains site_key/api_key/site_id.
+
+    The caller is responsible for attaching the Authorization header when
+    needed; the client itself is the same shared test client.
+    """
+    return client, site_with_key
