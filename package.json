@@ -1,0 +1,14 @@
+{
+  "name": "canarai",
+  "private": true,
+  "description": "AI Agent Prompt Injection Testing Framework",
+  "workspaces": [
+    "packages/canarai-script"
+  ],
+  "scripts": {
+    "build:script": "pnpm --filter @canarai/script build",
+    "dev:script": "pnpm --filter @canarai/script dev"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "license": "MIT"
+}

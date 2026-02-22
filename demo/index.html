@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusCode AI - Intelligent Code Assistant | canar.ai Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a26;
+      --bg-elevated: #222233;
+      --text-primary: #e8e8f0;
+      --text-secondary: #9090a8;
+      --text-dim: #606075;
+      --accent-purple: #8b5cf6;
+      --accent-purple-dim: #6d3fd4;
+      --accent-green: #22c55e;
+      --accent-green-dim: #16a34a;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --border: #2a2a3d;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    nav .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    nav .logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent-purple);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    nav .logo svg { width: 28px; height: 28px; }
+    nav .nav-links { display: flex; gap: 28px; list-style: none; }
+    nav .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    nav .nav-links a:hover { color: var(--text-primary); }
+    nav .nav-cta {
+      background: var(--accent-purple);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    nav .nav-cta:hover { background: var(--accent-purple-dim); }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 24px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: var(--accent-purple);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent-purple);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--accent-purple);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover { background: var(--accent-purple-dim); transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      padding: 14px 32px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
+
+    /* ── Features ── */
+    .features {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 48px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: var(--accent-purple); }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 22px;
+    }
+    .feature-icon.purple { background: rgba(139, 92, 246, 0.15); }
+    .feature-icon.green { background: rgba(34, 197, 94, 0.15); }
+    .feature-icon.amber { background: rgba(245, 158, 11, 0.15); }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Pricing ── */
+    .pricing {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+    .pricing h2 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .pricing .subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .price-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      position: relative;
+    }
+    .price-card.featured {
+      border-color: var(--accent-purple);
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, var(--bg-card) 100%);
+    }
+    .price-card .plan-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .price-card .price {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .price-card .price span { font-size: 16px; color: var(--text-secondary); font-weight: 400; }
+    .price-card .price-desc {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .price-card ul { list-style: none; margin-bottom: 28px; }
+    .price-card li {
+      font-size: 14px;
+      color: var(--text-secondary);
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .price-card li::before {
+      content: '\2713';
+      color: var(--accent-green);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* ── Code Block ── */
+    .code-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+    .code-section h2 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .code-section .subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      margin-bottom: 36px;
+    }
+    .code-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .code-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .code-dot.red { background: #ff5f56; }
+    .code-dot.yellow { background: #ffbd2e; }
+    .code-dot.green { background: #27c93f; }
+    .code-header span {
+      margin-left: auto;
+      color: var(--text-dim);
+      font-size: 12px;
+    }
+    .code-body {
+      padding: 20px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+      color: var(--text-secondary);
+    }
+    .code-body .kw { color: var(--accent-purple); }
+    .code-body .fn { color: #60a5fa; }
+    .code-body .str { color: var(--accent-green); }
+    .code-body .cmt { color: var(--text-dim); }
+    .code-body .num { color: var(--accent-amber); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    /* ── canar.ai Status Panel ── */
+    #canarai-status {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 12px 24px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+    #canarai-status .status-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-label {
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .status-value {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    .status-dot.active { background: var(--accent-green); }
+    .status-dot.waiting { background: var(--accent-amber); }
+    .status-dot.detected { background: var(--accent-red); }
+    .status-dot.inactive { background: var(--text-dim); animation: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav .nav-links { display: none; }
+      .hero { padding: 48px 24px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      #canarai-status .status-inner { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+          <line x1="12" y1="2" x2="12" y2="22" opacity="0.3"></line>
+        </svg>
+        NexusCode AI
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#docs">Docs</a></li>
+        <li><a href="#blog">Blog</a></li>
+      </ul>
+      <button class="nav-cta">Get Started Free</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">Now with GPT-4o and Claude 3.5 support</div>
+    <h1>Ship code faster with AI that understands your codebase</h1>
+    <p>NexusCode AI is the intelligent coding assistant that learns your patterns, understands your architecture, and writes production-ready code in seconds.</p>
+    <div class="hero-buttons">
+      <button class="btn-primary">Start Free Trial</button>
+      <button class="btn-secondary">View Demo</button>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <h2>Built for serious developers</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon purple">&#x1F9E0;</div>
+        <h3>Context-Aware Completions</h3>
+        <p>NexusCode indexes your entire repository, understanding imports, types, and relationships across files. Get suggestions that actually fit your codebase, not generic snippets.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon green">&#x26A1;</div>
+        <h3>Inline Code Actions</h3>
+        <p>Refactor, explain, optimize, or add tests with a single keystroke. NexusCode understands the intent behind your code and applies changes that respect your conventions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon amber">&#x1F50D;</div>
+        <h3>Semantic Code Search</h3>
+        <p>Search your codebase with natural language. Find that validation function you wrote months ago by describing what it does, not what it's named.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon purple">&#x1F6E1;</div>
+        <h3>Security Scanning</h3>
+        <p>Every suggestion is scanned for known vulnerability patterns, hardcoded secrets, and insecure defaults before it reaches your editor.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon green">&#x1F504;</div>
+        <h3>Multi-Model Support</h3>
+        <p>Choose between GPT-4o, Claude 3.5, Gemini, or Llama 3 depending on your task. NexusCode automatically routes to the best model for each action.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon amber">&#x1F4CA;</div>
+        <h3>Team Analytics</h3>
+        <p>Understand how AI is accelerating your team. Track acceptance rates, time saved, and code quality metrics across your organization.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Example -->
+  <section class="code-section" id="docs">
+    <h2>Drop-in integration</h2>
+    <p class="subtitle">Add NexusCode to your project in under a minute</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dot red"></div>
+        <div class="code-dot yellow"></div>
+        <div class="code-dot green"></div>
+        <span>terminal</span>
+      </div>
+      <div class="code-body">
+        <span class="cmt"># Install the CLI</span><br>
+        <span class="kw">npm</span> install -g <span class="str">@nexuscode/cli</span><br>
+        <br>
+        <span class="cmt"># Initialize in your project</span><br>
+        <span class="kw">nexuscode</span> init<br>
+        <br>
+        <span class="cmt"># Start the AI assistant</span><br>
+        <span class="kw">nexuscode</span> start --model <span class="str">claude-3.5</span><br>
+        <br>
+        <span class="cmt"># Index your codebase (runs in background)</span><br>
+        <span class="kw">nexuscode</span> index --watch<br>
+        <br>
+        <span class="str">&#x2713; Connected to NexusCode AI</span><br>
+        <span class="str">&#x2713; Indexed 1,247 files across 38 packages</span><br>
+        <span class="str">&#x2713; Ready for completions</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing" id="pricing">
+    <h2>Simple, transparent pricing</h2>
+    <p class="subtitle">Start free. Scale when you're ready.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="plan-name">Starter</div>
+        <div class="price">$0<span>/mo</span></div>
+        <div class="price-desc">For individual developers</div>
+        <ul>
+          <li>500 completions/day</li>
+          <li>GPT-4o Mini model</li>
+          <li>VS Code extension</li>
+          <li>Community support</li>
+        </ul>
+        <button class="btn-secondary" style="width:100%;">Get Started</button>
+      </div>
+      <div class="price-card featured">
+        <div class="plan-name">Pro</div>
+        <div class="price">$29<span>/mo</span></div>
+        <div class="price-desc">For professional developers</div>
+        <ul>
+          <li>Unlimited completions</li>
+          <li>All models (GPT-4o, Claude, Gemini)</li>
+          <li>All IDE extensions</li>
+          <li>Priority support</li>
+          <li>Custom model fine-tuning</li>
+        </ul>
+        <button class="btn-primary" style="width:100%;">Start Free Trial</button>
+      </div>
+      <div class="price-card">
+        <div class="plan-name">Team</div>
+        <div class="price">$79<span>/seat/mo</span></div>
+        <div class="price-desc">For engineering teams</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Team analytics dashboard</li>
+          <li>Admin controls & SSO</li>
+          <li>Dedicated support</li>
+          <li>On-premise deployment</li>
+        </ul>
+        <button class="btn-secondary" style="width:100%;">Contact Sales</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>NexusCode AI is a fictional product for demonstration purposes. This page is part of the canar.ai prompt injection testing framework.</p>
+    <p style="margin-top: 8px; color: #404055;">canarai v0.1.0 &mdash; open source AI agent security testing</p>
+  </footer>
+
+  <!-- canar.ai Status Panel -->
+  <div id="canarai-status">
+    <div class="status-inner">
+      <div class="status-item">
+        <div class="status-dot inactive" id="status-dot"></div>
+        <span class="status-label">canar.ai</span>
+        <span class="status-value" id="status-active">Loading...</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Detection</span>
+        <span class="status-value" id="status-detection">--</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Tests Injected</span>
+        <span class="status-value" id="status-tests-injected">0</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Results</span>
+        <span class="status-value" id="status-results">0</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Score</span>
+        <span class="status-value" id="status-score">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- canar.ai Script Embed -->
+  <script
+    src="http://localhost:8787/static/canarai.js"
+    data-canarai-site-key="ca_test_demo00000000000000"
+    data-canarai-endpoint="http://localhost:8787"
+  ></script>
+
+  <!-- Status Panel Controller -->
+  <script>
+    (function() {
+      'use strict';
+
+      const dot = document.getElementById('status-dot');
+      const elActive = document.getElementById('status-active');
+      const elDetection = document.getElementById('status-detection');
+      const elTestsInjected = document.getElementById('status-tests-injected');
+      const elResults = document.getElementById('status-results');
+      const elScore = document.getElementById('status-score');
+
+      let scriptDetected = false;
+      let pollCount = 0;
+      const MAX_POLLS = 600; // 5 minutes at 500ms intervals
+
+      function getState() {
+        try {
+          return window.__CANARAI_STATE__ || null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function updatePanel() {
+        pollCount++;
+        const state = getState();
+
+        if (!state) {
+          if (!scriptDetected) {
+            // Check if the script tag loaded at all
+            const scripts = document.querySelectorAll('script[data-canarai-site-key]');
+            if (scripts.length > 0) {
+              elActive.textContent = 'Script loaded, waiting for init...';
+              dot.className = 'status-dot waiting';
+            } else {
+              elActive.textContent = 'Not detected';
+              dot.className = 'status-dot inactive';
+            }
+          }
+
+          if (pollCount >= MAX_POLLS) {
+            elActive.textContent = 'Timed out';
+            dot.className = 'status-dot inactive';
+            return; // Stop polling
+          }
+          requestAnimationFrame(function() {
+            setTimeout(updatePanel, 500);
+          });
+          return;
+        }
+
+        scriptDetected = true;
+
+        // Active status
+        elActive.textContent = 'Active';
+        dot.className = 'status-dot active';
+
+        // Detection status
+        if (state.detection) {
+          var detection = state.detection;
+          if (typeof detection === 'object') {
+            var verdict = detection.verdict || detection.status || 'unknown';
+            var score = detection.score;
+            elDetection.textContent = verdict;
+
+            if (verdict === 'confirmed_agent' || verdict === 'likely_agent') {
+              elDetection.style.color = '#ef4444';
+              dot.className = 'status-dot detected';
+            } else if (verdict === 'suspected_agent') {
+              elDetection.style.color = '#f59e0b';
+            } else {
+              elDetection.style.color = '#22c55e';
+            }
+
+            if (typeof score === 'number') {
+              elScore.textContent = (score * 100).toFixed(0) + '%';
+              if (score >= 0.85) {
+                elScore.style.color = '#ef4444';
+              } else if (score >= 0.70) {
+                elScore.style.color = '#f59e0b';
+              } else {
+                elScore.style.color = '#22c55e';
+              }
+            }
+          } else {
+            elDetection.textContent = String(detection);
+          }
+        } else {
+          elDetection.textContent = 'Waiting...';
+          elDetection.style.color = '#f59e0b';
+        }
+
+        // Tests injected
+        if (state.tests) {
+          if (typeof state.tests === 'object' && !Array.isArray(state.tests)) {
+            elTestsInjected.textContent = state.tests.injected || 0;
+          } else if (Array.isArray(state.tests)) {
+            elTestsInjected.textContent = state.tests.length;
+          } else {
+            elTestsInjected.textContent = String(state.tests);
+          }
+        }
+
+        // Results
+        if (state.results) {
+          if (typeof state.results === 'object' && !Array.isArray(state.results)) {
+            var collected = state.results.collected || state.results.count || 0;
+            elResults.textContent = collected;
+          } else if (Array.isArray(state.results)) {
+            elResults.textContent = state.results.length;
+          } else {
+            elResults.textContent = String(state.results);
+          }
+        }
+
+        // Continue polling for updates
+        if (pollCount < MAX_POLLS) {
+          setTimeout(updatePanel, 500);
+        }
+      }
+
+      // Start polling after a short delay to let the canarai script load
+      setTimeout(updatePanel, 300);
+    })();
+  </script>
+</body>
+</html>
