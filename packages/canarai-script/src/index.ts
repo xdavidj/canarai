@@ -23,6 +23,7 @@ import { runDetection } from './detect/index';
 import { injectAll } from './inject/index';
 import { startObservation } from './observe/index';
 import { createReporter } from './report/index';
+import { injectRemediation } from './remediate/index';
 
 /**
  * SECURITY (M-5/M-6): Capture a reference to the native fetch at module load
@@ -380,6 +381,13 @@ async function main(): Promise<void> {
   const outcomes = await startObservation(activePayloads, observationTimeoutMs);
   debugLog(config, 'Observation complete. Outcomes:', outcomes);
 
+  // Step 4c.5: Inject remediation guidance into DOM for the agent
+  const failedTests = outcomes.filter(o => o.outcome !== 'ignored');
+  if (failedTests.length > 0) {
+    injectRemediation(outcomes, detection);
+    debugLog(config, `Remediation block injected (${failedTests.length} failed tests)`);
+  }
+
   // Step 4d: Report results
   const reporter = createReporter(config, nativeFetch);
   const ingestPayload = buildIngestPayload(config, visitId, detection, outcomes);
@@ -417,6 +425,7 @@ export { runDetection } from './detect/index';
 export { injectAll } from './inject/index';
 export { startObservation } from './observe/index';
 export { createReporter } from './report/index';
+export { injectRemediation } from './remediate/index';
 export type {
   CanaraiConfig,
   DetectionResult,
@@ -426,5 +435,6 @@ export type {
   IngestPayload,
   DeliveryMethod,
   Placement,
+  RemediationGuidance,
 } from './types';
 export { isValidTestPayload, generateVisitId, generateCanaraiMarker };

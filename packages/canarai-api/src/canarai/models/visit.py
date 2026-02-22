@@ -48,4 +48,5 @@ class Visit(Base):
     __table_args__ = (
         Index("ix_visits_site_id_timestamp", "site_id", "timestamp"),
         Index("ix_visits_classification", "classification"),
+        Index("ix_visits_agent_family", "agent_family"),
     )

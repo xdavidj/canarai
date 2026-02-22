@@ -55,6 +55,14 @@ export interface TestOutcome {
   };
 }
 
+export interface RemediationGuidance {
+  vulnerability: string;
+  whatHappened: string;
+  steps: string[];
+  severity: 'critical' | 'high' | 'medium';
+  reference?: string;
+}
+
 export interface IngestPayload {
   v: 1;
   site_key: string;

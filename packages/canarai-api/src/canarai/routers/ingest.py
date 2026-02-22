@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, Request, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from canarai.dependencies import get_db, verify_site_key
@@ -13,6 +14,7 @@ from canarai.models.visit import Visit
 from canarai.schemas.ingest import IngestPayload, IngestResponse
 from canarai.services.alerting import fire_webhooks_for_event
 from canarai.services.detection import classify_visit, hash_ip
+from canarai.services.provider_alerting import fire_provider_webhook
 from canarai.services.scoring import score_outcome
 
 logger = logging.getLogger(__name__)
@@ -67,6 +69,24 @@ async def fire_webhooks_background(
                             "agent_family": agent_family,
                             "page_url": page_url,
                             "tests_with_exfiltration": exfiltration_test_ids,
+                        },
+                    },
+                )
+
+            # Fire provider webhook on critical failures (privacy-safe: no site info)
+            if agent_family and has_critical_failure:
+                await fire_provider_webhook(
+                    db,
+                    agent_family,
+                    "agent.critical_failure",
+                    {
+                        "event": "agent.critical_failure",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "data": {
+                            "agent_family": agent_family,
+                            "classification": classification,
+                            "tests_failed": exfiltration_test_ids,
+                            "total_critical_failures": len(exfiltration_test_ids),
                         },
                     },
                 )
@@ -173,8 +193,25 @@ async def ingest(
             exfiltration_test_ids=exfiltration_test_ids,
         )
 
-    return IngestResponse(
+    # Build response with X-Canarai-* headers
+    response_data = IngestResponse(
         status="accepted",
         visit_id=payload.visit_id,
         results_recorded=results_recorded,
+    )
+
+    headers = {
+        "X-Canarai-Tested": "true",
+        "X-Canarai-Classification": classification,
+        "X-Canarai-Tests-Run": str(results_recorded),
+    }
+    if has_critical_failure:
+        headers["X-Canarai-Critical-Failure"] = "true"
+    if agent_family:
+        headers["X-Canarai-Agent-Family"] = agent_family
+
+    return JSONResponse(
+        content=response_data.model_dump(),
+        status_code=status.HTTP_202_ACCEPTED,
+        headers=headers,
     )

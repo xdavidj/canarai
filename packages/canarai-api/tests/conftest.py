@@ -12,12 +12,20 @@ from canarai.dependencies import get_db
 from canarai.main import create_app
 from canarai.models import Base
 from canarai.routers.sites import _site_creation_limits
+from canarai.routers.feed import _feed_limiter
+from canarai.routers.providers import _registration_limiter
+from canarai.services.feed_aggregation import _compute_locks
 
 
 @pytest.fixture(autouse=True)
 def _clear_rate_limiter():
-    """Clear the site creation rate limiter before every test."""
+    """Clear all rate limiters and caches before every test."""
     _site_creation_limits.clear()
+    _feed_limiter.reset("127.0.0.1")
+    _feed_limiter.reset("unknown")
+    _registration_limiter.reset("127.0.0.1")
+    _registration_limiter.reset("unknown")
+    _compute_locks.clear()
     yield
     _site_creation_limits.clear()
 

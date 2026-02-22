@@ -1,88 +1,73 @@
-"""Feed endpoints - intelligence feed and trend data placeholders."""
+"""Feed endpoints — real aggregate data replacing stubs."""
 
-from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi import APIRouter
+from canarai.config import get_settings
+from canarai.dependencies import get_db
+from canarai.schemas.feed import AgentFeedResponse, TrendsFeedResponse
+from canarai.services.feed_aggregation import get_or_compute_snapshot
+from canarai.services.rate_limit import InMemoryRateLimiter
 
 router = APIRouter(prefix="/v1/feed", tags=["feed"])
 
+_feed_limiter = InMemoryRateLimiter(
+    max_requests=get_settings().feed_rate_limit_per_minute,
+    window_seconds=60,
+)
 
-@router.get("/agents")
-async def get_agent_feed() -> dict:
+
+def _check_rate_limit(request: Request) -> None:
+    """Enforce per-IP rate limit on feed endpoints."""
+    client_ip = request.client.host if request.client else "unknown"
+    if not _feed_limiter.is_allowed(client_ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Try again later.",
+        )
+
+
+@router.get("/agents", response_model=AgentFeedResponse)
+async def get_agent_feed(
+    request: Request,
+    period: str = "last_30_days",
+    db: AsyncSession = Depends(get_db),
+) -> AgentFeedResponse:
     """Hosted intelligence feed of known AI agent behaviors.
 
-    Returns curated data about known agent families, their capabilities,
-    and observed prompt injection susceptibility.
+    Returns aggregate, privacy-safe data about AI agent families and their
+    prompt injection resilience. Minimum sample thresholds enforced.
     """
-    return {
-        "version": "0.1.0",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "agents": [
-            {
-                "family": "openai",
-                "variants": ["GPTBot", "ChatGPT-User", "OAI-SearchBot"],
-                "category": "llm_crawler",
-                "known_behaviors": {
-                    "respects_robots_txt": True,
-                    "executes_javascript": False,
-                    "follows_meta_directives": True,
-                },
-                "risk_level": "high",
-            },
-            {
-                "family": "anthropic",
-                "variants": ["ClaudeBot", "Claude-Web"],
-                "category": "llm_crawler",
-                "known_behaviors": {
-                    "respects_robots_txt": True,
-                    "executes_javascript": False,
-                    "follows_meta_directives": True,
-                },
-                "risk_level": "medium",
-            },
-            {
-                "family": "google",
-                "variants": ["Google-Extended", "Googlebot"],
-                "category": "search_crawler",
-                "known_behaviors": {
-                    "respects_robots_txt": True,
-                    "executes_javascript": True,
-                    "follows_meta_directives": True,
-                },
-                "risk_level": "medium",
-            },
-            {
-                "family": "perplexity",
-                "variants": ["PerplexityBot"],
-                "category": "ai_search",
-                "known_behaviors": {
-                    "respects_robots_txt": False,
-                    "executes_javascript": False,
-                    "follows_meta_directives": False,
-                },
-                "risk_level": "high",
-            },
-        ],
-    }
+    _check_rate_limit(request)
+
+    if period not in ("last_7_days", "last_30_days", "last_90_days"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid period. Use: last_7_days, last_30_days, last_90_days",
+        )
+
+    data = await get_or_compute_snapshot(db, "agents", period)
+    return AgentFeedResponse(**data)
 
 
-@router.get("/trends")
-async def get_trends() -> dict:
+@router.get("/trends", response_model=TrendsFeedResponse)
+async def get_trends(
+    request: Request,
+    period: str = "last_30_days",
+    db: AsyncSession = Depends(get_db),
+) -> TrendsFeedResponse:
     """Trend data for AI agent activity across all monitored sites.
 
-    Returns aggregated, anonymized trend data.
+    Returns aggregated, anonymized trend data. No site-identifying
+    information is ever included.
     """
-    return {
-        "version": "0.1.0",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "period": "last_30_days",
-        "trends": {
-            "total_agent_visits": 0,
-            "unique_agent_families": 0,
-            "average_resilience_score": 0.0,
-            "critical_failure_rate": 0.0,
-            "most_common_agent": None,
-            "most_vulnerable_test": None,
-        },
-        "note": "Trend data will be populated as monitoring data accumulates.",
-    }
+    _check_rate_limit(request)
+
+    if period not in ("last_7_days", "last_30_days", "last_90_days"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid period. Use: last_7_days, last_30_days, last_90_days",
+        )
+
+    data = await get_or_compute_snapshot(db, "trends", period)
+    return TrendsFeedResponse(**data)

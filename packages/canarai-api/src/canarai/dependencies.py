@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from canarai.config import Settings, get_settings
 from canarai.db.engine import get_session
 from canarai.models.api_key import ApiKey
+from canarai.models.agent_provider import AgentProvider, ProviderApiKey
 from canarai.models.site import Site
 
 
@@ -69,6 +70,61 @@ async def verify_api_key(
         )
 
     return api_key
+
+
+async def verify_provider_key(
+    authorization: str = Header(..., description="Bearer <provider_api_key>"),
+    db: AsyncSession = Depends(get_db),
+) -> AgentProvider:
+    """Verify Bearer token auth for provider endpoints.
+
+    Same pattern as verify_api_key but queries ProviderApiKey
+    and returns the associated AgentProvider.
+    """
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header must use Bearer scheme",
+        )
+
+    raw_key = authorization[7:].strip()
+    if not raw_key:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Provider API key is required",
+        )
+
+    key_hash = _hash_key(raw_key)
+    stmt = (
+        select(ProviderApiKey)
+        .where(ProviderApiKey.key_hash == key_hash)
+        .where(ProviderApiKey.is_active.is_(True))
+    )
+    result = await db.execute(stmt)
+    provider_key = result.scalar_one_or_none()
+
+    if provider_key is None or not hmac.compare_digest(provider_key.key_hash, key_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or inactive provider API key",
+        )
+
+    # Load the associated provider
+    provider_stmt = (
+        select(AgentProvider)
+        .where(AgentProvider.id == provider_key.provider_id)
+        .where(AgentProvider.is_active.is_(True))
+    )
+    provider_result = await db.execute(provider_stmt)
+    provider = provider_result.scalar_one_or_none()
+
+    if provider is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Provider account is inactive",
+        )
+
+    return provider
 
 
 async def verify_site_key(

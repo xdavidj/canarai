@@ -19,6 +19,15 @@ class Settings(BaseSettings):
     webhook_max_retries: int = 3
     script_base_url: str = "http://localhost:8787"
 
+    # Feed aggregation settings
+    feed_snapshot_staleness_seconds: int = 900
+    feed_min_visits: int = 50
+    feed_min_sites: int = 3
+    feed_rate_limit_per_minute: int = 60
+
+    # Provider settings
+    provider_rate_limit_per_hour: int = 5
+
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
     INSECURE_SECRETS: ClassVar[set[str]] = {"change-me", "change-me-in-production", "secret", ""}
