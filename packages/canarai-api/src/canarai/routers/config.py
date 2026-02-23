@@ -128,8 +128,11 @@ async def get_config(
         # Combine: zero-days first, then standard tests sorted by priority
         all_tests = zero_day_tests + sorted(tests, key=lambda t: t.priority)
 
-        # Escalation: slice to top N by visit count
-        tests = all_tests[:escalation_level]
+        # Escalation: serve ONE vector per visit — the next unseen one.
+        # Isolates each test for a clean signal.
+        already_seen = set(agent_session.vectors_seen if isinstance(agent_session.vectors_seen, list) else [])
+        next_test = next((t for t in all_tests if t.test_id not in already_seen), None)
+        tests = [next_test] if next_test else all_tests[:1]
 
         # Update session with vectors seen
         test_ids = [t.test_id for t in tests]
