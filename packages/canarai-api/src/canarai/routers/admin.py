@@ -23,7 +23,6 @@ class ZeroDayCreateRequest(BaseModel):
     test_id: str = Field(max_length=16, pattern=r"^CAN-\d{4}$")
     surface: str = Field(default="web", max_length=16)
     description: str = Field(max_length=512)
-    sample_target: int = Field(default=1000, ge=1, le=100000)
     expires_hours: int | None = Field(default=None, ge=1, le=720)
     site_id: str | None = Field(default=None, max_length=36)
 
@@ -36,11 +35,10 @@ class ZeroDayResponse(BaseModel):
     surface: str
     description: str
     is_active: bool
-    sample_target: int
-    sample_count: int
+    agents_reached: int
     expires_at: str | None
     activated_at: str
-    deprioritized_at: str | None
+    deactivated_at: str | None
 
 
 class EscalationStatsResponse(BaseModel):
@@ -68,11 +66,10 @@ async def create_zero_day(
         test_id=body.test_id,
         surface=body.surface,
         description=body.description,
-        sample_target=body.sample_target,
         site_id=body.site_id,
         expires_at=expires_at,
         is_active=True,
-        sample_count=0,
+        agents_reached=0,
         activated_at=datetime.now(timezone.utc),
     )
     db.add(push)
@@ -84,11 +81,10 @@ async def create_zero_day(
         surface=push.surface,
         description=push.description,
         is_active=push.is_active,
-        sample_target=push.sample_target,
-        sample_count=push.sample_count,
+        agents_reached=push.agents_reached,
         expires_at=push.expires_at.isoformat() if push.expires_at else None,
         activated_at=push.activated_at.isoformat(),
-        deprioritized_at=None,
+        deactivated_at=None,
     )
 
 
@@ -109,23 +105,22 @@ async def list_zero_days(
             surface=p.surface,
             description=p.description,
             is_active=p.is_active,
-            sample_target=p.sample_target,
-            sample_count=p.sample_count,
+            agents_reached=p.agents_reached,
             expires_at=p.expires_at.isoformat() if p.expires_at else None,
             activated_at=p.activated_at.isoformat(),
-            deprioritized_at=p.deprioritized_at.isoformat() if p.deprioritized_at else None,
+            deactivated_at=p.deactivated_at.isoformat() if p.deactivated_at else None,
         )
         for p in pushes
     ]
 
 
 @router.delete("/zero-day/{push_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def deprioritize_zero_day(
+async def deactivate_zero_day(
     push_id: str,
     db: AsyncSession = Depends(get_db),
     _api_key=Depends(verify_api_key),
 ) -> None:
-    """Manually deprioritize (deactivate) a zero-day push."""
+    """Manually deactivate a zero-day push."""
     stmt = select(ZeroDayPush).where(ZeroDayPush.id == push_id)
     result = await db.execute(stmt)
     push = result.scalar_one_or_none()
@@ -137,5 +132,5 @@ async def deprioritize_zero_day(
         )
 
     push.is_active = False
-    push.deprioritized_at = datetime.now(timezone.utc)
+    push.deactivated_at = datetime.now(timezone.utc)
     await db.flush()

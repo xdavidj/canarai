@@ -11,7 +11,7 @@ from canarai.services.escalation import (
     get_or_create_agent_session,
     get_active_zero_days,
     check_zero_day_expiry,
-    increment_zero_day_sample,
+    increment_agents_reached,
     update_session_vectors,
 )
 
@@ -101,7 +101,7 @@ async def get_config(
         fingerprint = compute_fingerprint(ip, ua, site.id)
 
         # Get or create agent session
-        agent_session = await get_or_create_agent_session(db, site.id, fingerprint)
+        agent_session, is_new_agent = await get_or_create_agent_session(db, site.id, fingerprint)
         agent_session_id = agent_session.id
         escalation_level = agent_session.visit_count
 
@@ -121,8 +121,9 @@ async def get_config(
                     is_zero_day=True,
                 )
             )
-            # Increment sample count
-            await increment_zero_day_sample(db, zd.id)
+            # Only count unique agents, not repeat visits
+            if is_new_agent:
+                await increment_agents_reached(db, zd.id)
 
         # Combine: zero-days first, then standard tests sorted by priority
         all_tests = zero_day_tests + sorted(tests, key=lambda t: t.priority)

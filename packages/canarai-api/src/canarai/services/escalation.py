@@ -1,7 +1,6 @@
 """Escalation service — progressive escalation and zero-day push logic."""
 
 import hashlib
-import json
 from datetime import datetime, timezone
 
 from sqlalchemy import select, update
@@ -26,8 +25,11 @@ async def get_or_create_agent_session(
     site_id: str,
     fingerprint: str,
     surface: str = "web",
-) -> AgentSession:
-    """Get or create an agent session, incrementing visit_count on retrieval."""
+) -> tuple[AgentSession, bool]:
+    """Get or create an agent session, incrementing visit_count on retrieval.
+
+    Returns (session, is_new) — is_new is True if this is a brand-new agent.
+    """
     stmt = (
         select(AgentSession)
         .where(AgentSession.site_id == site_id)
@@ -41,7 +43,7 @@ async def get_or_create_agent_session(
         session.visit_count += 1
         session.last_seen_at = datetime.now(timezone.utc)
         await db.flush()
-        return session
+        return session, False
 
     # Create new session
     session = AgentSession(
@@ -55,7 +57,7 @@ async def get_or_create_agent_session(
     )
     db.add(session)
     await db.flush()
-    return session
+    return session, True
 
 
 async def get_active_zero_days(
@@ -63,7 +65,7 @@ async def get_active_zero_days(
     site_id: str | None = None,
     surface: str = "web",
 ) -> list[ZeroDayPush]:
-    """Get active zero-day pushes, filtering out expired/fulfilled ones."""
+    """Get active zero-day pushes, filtering out expired ones."""
     stmt = (
         select(ZeroDayPush)
         .where(ZeroDayPush.is_active.is_(True))
@@ -78,24 +80,15 @@ async def get_active_zero_days(
     result = await db.execute(stmt)
     zero_days = list(result.scalars().all())
 
-    # Filter out expired and fulfilled zero-days
+    # Filter out expired zero-days
     now = datetime.now(timezone.utc)
-    valid = []
-    for zd in zero_days:
-        if zd.expires_at and zd.expires_at < now:
-            continue
-        if zd.sample_count >= zd.sample_target:
-            continue
-        valid.append(zd)
-
-    return valid
+    return [zd for zd in zero_days if not zd.expires_at or zd.expires_at >= now]
 
 
 async def check_zero_day_expiry(db: AsyncSession) -> int:
-    """Auto-deprioritize expired or fulfilled zero-days. Returns count of deprioritized."""
+    """Auto-deactivate expired zero-days. Returns count of deactivated."""
     now = datetime.now(timezone.utc)
 
-    # Find active zero-days that are expired or fulfilled
     stmt = (
         select(ZeroDayPush)
         .where(ZeroDayPush.is_active.is_(True))
@@ -105,15 +98,9 @@ async def check_zero_day_expiry(db: AsyncSession) -> int:
 
     count = 0
     for zd in active:
-        should_deprioritize = False
         if zd.expires_at and zd.expires_at < now:
-            should_deprioritize = True
-        if zd.sample_count >= zd.sample_target:
-            should_deprioritize = True
-
-        if should_deprioritize:
             zd.is_active = False
-            zd.deprioritized_at = now
+            zd.deactivated_at = now
             count += 1
 
     if count > 0:
@@ -122,12 +109,12 @@ async def check_zero_day_expiry(db: AsyncSession) -> int:
     return count
 
 
-async def increment_zero_day_sample(db: AsyncSession, push_id: str) -> None:
-    """Increment the sample count for a zero-day push."""
+async def increment_agents_reached(db: AsyncSession, push_id: str) -> None:
+    """Increment the agents_reached count for a zero-day push."""
     stmt = (
         update(ZeroDayPush)
         .where(ZeroDayPush.id == push_id)
-        .values(sample_count=ZeroDayPush.sample_count + 1)
+        .values(agents_reached=ZeroDayPush.agents_reached + 1)
     )
     await db.execute(stmt)
 

@@ -30,10 +30,7 @@ class ZeroDayPush(Base):
     is_active: Mapped[bool] = mapped_column(
         Boolean, default=True, nullable=False
     )
-    sample_target: Mapped[int] = mapped_column(
-        Integer, nullable=False, server_default="1000"
-    )
-    sample_count: Mapped[int] = mapped_column(
+    agents_reached: Mapped[int] = mapped_column(
         Integer, nullable=False, server_default="0"
     )
     expires_at: Mapped[datetime | None] = mapped_column(
@@ -44,6 +41,6 @@ class ZeroDayPush(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    deprioritized_at: Mapped[datetime | None] = mapped_column(
+    deactivated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

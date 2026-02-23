@@ -46,11 +46,10 @@ def upgrade() -> None:
         sa.Column("surface", sa.String(16), nullable=False, server_default="web"),
         sa.Column("description", sa.Text(), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False, server_default="1"),
-        sa.Column("sample_target", sa.Integer(), nullable=False, server_default="1000"),
-        sa.Column("sample_count", sa.Integer(), nullable=False, server_default="0"),
+        sa.Column("agents_reached", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("activated_at", sa.DateTime(timezone=True), nullable=False),
-        sa.Column("deprioritized_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("deactivated_at", sa.DateTime(timezone=True), nullable=True),
     )
     op.create_index("ix_zero_day_pushes_site_id", "zero_day_pushes", ["site_id"])
 
