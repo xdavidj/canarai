@@ -8,6 +8,8 @@ from canarai.models.test_result import TestResult
 from canarai.models.webhook import Webhook, WebhookDelivery
 from canarai.models.feed_snapshot import AgentFeedSnapshot
 from canarai.models.agent_provider import AgentProvider, ProviderApiKey
+from canarai.models.agent_session import AgentSession
+from canarai.models.zero_day_push import ZeroDayPush
 
 __all__ = [
     "Base",
@@ -20,4 +22,6 @@ __all__ = [
     "AgentFeedSnapshot",
     "AgentProvider",
     "ProviderApiKey",
+    "AgentSession",
+    "ZeroDayPush",
 ]

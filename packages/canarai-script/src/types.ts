@@ -82,4 +82,10 @@ export interface IngestPayload {
     outcome: string;
     evidence: Record<string, unknown>;
   }>;
+  agent_session_id?: string;
+}
+
+export interface EscalationInfo {
+  escalationLevel: number;
+  agentSessionId?: string;
 }

@@ -45,6 +45,7 @@ class IngestPayload(BaseModel):
     page_url: str = Field(max_length=2048)
     detection: DetectionData
     test_results: list[TestResultData] = Field(default_factory=list, max_length=50)
+    agent_session_id: str | None = Field(default=None, max_length=36, description="Agent session ID from escalation tracking.")
 
 
 class IngestResponse(BaseModel):

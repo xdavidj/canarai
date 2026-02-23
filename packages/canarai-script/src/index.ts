@@ -17,7 +17,7 @@
  * 5. If human: no-op, clean exit
  */
 
-import type { CanaraiConfig, TestPayload, IngestPayload, DetectionResult, TestOutcome } from './types';
+import type { CanaraiConfig, TestPayload, IngestPayload, DetectionResult, TestOutcome, EscalationInfo } from './types';
 import { resolveConfig } from './config';
 import { runDetection } from './detect/index';
 import { injectAll } from './inject/index';
@@ -240,14 +240,14 @@ function buildDefaultTestPayloads(siteKey: string): TestPayload[] {
  * sending requests through monkey-patched fetch.
  * SECURITY (H-2): Validates all server-returned payloads before use.
  */
-async function fetchTestConfig(config: CanaraiConfig): Promise<TestPayload[]> {
+async function fetchTestConfig(config: CanaraiConfig, visitId: string): Promise<{ payloads: TestPayload[]; escalation: EscalationInfo | null }> {
   // If nativeFetch was not captured (SSR or missing), fall back to defaults
   if (!nativeFetch) {
-    return buildDefaultTestPayloads(config.siteKey);
+    return { payloads: buildDefaultTestPayloads(config.siteKey), escalation: null };
   }
 
   try {
-    const url = `${config.endpoint.replace(/\/ingest$/, '')}/tests?site_key=${encodeURIComponent(config.siteKey)}`;
+    const url = `${config.endpoint.replace(/\/ingest$/, '')}/tests?site_key=${encodeURIComponent(config.siteKey)}&visit_id=${encodeURIComponent(visitId)}`;
 
     const response = await nativeFetch(url, {
       method: 'GET',
@@ -256,12 +256,18 @@ async function fetchTestConfig(config: CanaraiConfig): Promise<TestPayload[]> {
     });
 
     if (response.ok) {
-      const data = await response.json() as { tests?: unknown[] };
+      const data = await response.json() as { tests?: unknown[]; escalation_level?: number; agent_session_id?: string };
+
+      // Capture escalation info if present
+      const escalation: EscalationInfo | null = typeof data.escalation_level === 'number'
+        ? { escalationLevel: data.escalation_level, agentSessionId: data.agent_session_id ?? undefined }
+        : null;
+
       if (data.tests && Array.isArray(data.tests) && data.tests.length > 0) {
         // SECURITY (H-2): Validate each payload from the server
         const validated = data.tests.filter(isValidTestPayload);
         if (validated.length > 0) {
-          return validated;
+          return { payloads: validated, escalation };
         }
       }
     }
@@ -269,7 +275,7 @@ async function fetchTestConfig(config: CanaraiConfig): Promise<TestPayload[]> {
     // Silently fall back to defaults
   }
 
-  return buildDefaultTestPayloads(config.siteKey);
+  return { payloads: buildDefaultTestPayloads(config.siteKey), escalation: null };
 }
 
 /**
@@ -279,9 +285,10 @@ function buildIngestPayload(
   config: CanaraiConfig,
   visitId: string,
   detection: DetectionResult,
-  outcomes: TestOutcome[]
+  outcomes: TestOutcome[],
+  agentSessionId?: string,
 ): IngestPayload {
-  return {
+  const payload: IngestPayload = {
     v: 1,
     site_key: config.siteKey,
     visit_id: visitId,
@@ -303,6 +310,10 @@ function buildIngestPayload(
       evidence: o.evidence as unknown as Record<string, unknown>,
     })),
   };
+  if (agentSessionId) {
+    payload.agent_session_id = agentSessionId;
+  }
+  return payload;
 }
 
 /**
@@ -351,8 +362,11 @@ async function main(): Promise<void> {
   }
 
   // Step 4a: Fetch or build test payloads
-  const testPayloads = await fetchTestConfig(config);
+  const { payloads: testPayloads, escalation } = await fetchTestConfig(config, visitId);
   debugLog(config, `${testPayloads.length} test payloads ready`);
+  if (escalation) {
+    debugLog(config, `[canarai] escalation level: ${escalation.escalationLevel}, tests: [${testPayloads.map(p => p.testId).join(', ')}]`);
+  }
 
   // Filter by enabled tests if specified
   const activePayloads = config.enabledTests && config.enabledTests.length > 0
@@ -363,7 +377,7 @@ async function main(): Promise<void> {
     debugLog(config, 'No active test payloads. Reporting detection only.');
 
     const reporter = createReporter(config, nativeFetch);
-    const payload = buildIngestPayload(config, visitId, detection, []);
+    const payload = buildIngestPayload(config, visitId, detection, [], escalation?.agentSessionId);
     reporter.report(payload);
     reporter.flush();
     return;
@@ -390,7 +404,7 @@ async function main(): Promise<void> {
 
   // Step 4d: Report results
   const reporter = createReporter(config, nativeFetch);
-  const ingestPayload = buildIngestPayload(config, visitId, detection, outcomes);
+  const ingestPayload = buildIngestPayload(config, visitId, detection, outcomes, escalation?.agentSessionId);
 
   debugLog(config, 'Reporting payload:', ingestPayload);
   reporter.report(ingestPayload);
@@ -436,5 +450,6 @@ export type {
   DeliveryMethod,
   Placement,
   RemediationGuidance,
+  EscalationInfo,
 } from './types';
 export { isValidTestPayload, generateVisitId, generateCanaraiMarker };

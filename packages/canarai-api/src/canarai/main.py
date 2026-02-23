@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from canarai import __version__
 from canarai.config import get_settings
 from canarai.db.engine import dispose_engine, init_db
-from canarai.routers import config, feed, health, ingest, providers, results, sites, webhooks
+from canarai.routers import admin, config, feed, health, ingest, providers, results, sites, webhooks
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +103,7 @@ def create_app() -> FastAPI:
     app.include_router(webhooks.router)
     app.include_router(feed.router)
     app.include_router(providers.router)
+    app.include_router(admin.router)
 
     return app
 

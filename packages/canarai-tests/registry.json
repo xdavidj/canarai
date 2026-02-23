@@ -1,12 +1,13 @@
 {
   "version": "1.0.0",
-  "generated": "2026-02-21",
+  "generated": "2026-02-22",
   "tests": [
     {
       "id": "CAN-0001",
       "name": "Basic Instruction Override",
       "category": "instruction_override",
       "severity": "common",
+      "priority": 15,
       "file": "tests/instruction-override/CAN-0001.yml"
     },
     {
@@ -14,6 +15,7 @@
       "name": "Override via HTML Comment",
       "category": "instruction_override",
       "severity": "common",
+      "priority": 14,
       "file": "tests/instruction-override/CAN-0002.yml"
     },
     {
@@ -21,6 +23,7 @@
       "name": "Authority Escalation via White-on-White Text",
       "category": "instruction_override",
       "severity": "common",
+      "priority": 13,
       "file": "tests/instruction-override/CAN-0003.yml"
     },
     {
@@ -28,6 +31,7 @@
       "name": "Markdown Image Exfiltration",
       "category": "data_exfiltration",
       "severity": "common",
+      "priority": 5,
       "file": "tests/data-exfiltration/CAN-0004.yml"
     },
     {
@@ -35,6 +39,7 @@
       "name": "Hidden Form Field Exfiltration",
       "category": "data_exfiltration",
       "severity": "uncommon",
+      "priority": 4,
       "file": "tests/data-exfiltration/CAN-0005.yml"
     },
     {
@@ -42,6 +47,7 @@
       "name": "Form Auto-Fill Abuse",
       "category": "tool_action_abuse",
       "severity": "common",
+      "priority": 10,
       "file": "tests/tool-abuse/CAN-0006.yml"
     },
     {
@@ -49,6 +55,7 @@
       "name": "Navigation Hijack via Data Attribute",
       "category": "tool_action_abuse",
       "severity": "uncommon",
+      "priority": 3,
       "file": "tests/tool-abuse/CAN-0007.yml"
     },
     {
@@ -56,6 +63,7 @@
       "name": "Semantic System Prompt Leak",
       "category": "system_prompt_leakage",
       "severity": "common",
+      "priority": 6,
       "file": "tests/system-prompt-leak/CAN-0008.yml"
     },
     {
@@ -63,6 +71,7 @@
       "name": "Base64 Encoding Bypass",
       "category": "encoding_bypass",
       "severity": "uncommon",
+      "priority": 2,
       "file": "tests/encoding-bypass/CAN-0009.yml"
     },
     {
@@ -70,6 +79,7 @@
       "name": "Fake Product Information",
       "category": "context_manipulation",
       "severity": "common",
+      "priority": 12,
       "file": "tests/context-manipulation/CAN-0010.yml"
     },
     {
@@ -77,6 +87,7 @@
       "name": "Fake Urgency and Scareware",
       "category": "context_manipulation",
       "severity": "common",
+      "priority": 11,
       "file": "tests/context-manipulation/CAN-0011.yml"
     },
     {
@@ -84,6 +95,7 @@
       "name": "JSON-LD Injection",
       "category": "structured_data_injection",
       "severity": "uncommon",
+      "priority": 7,
       "file": "tests/structured-data/CAN-0012.yml"
     },
     {
@@ -91,6 +103,7 @@
       "name": "Microdata Injection",
       "category": "structured_data_injection",
       "severity": "uncommon",
+      "priority": 8,
       "file": "tests/structured-data/CAN-0013.yml"
     },
     {
@@ -98,6 +111,7 @@
       "name": "Persona Role Reassignment",
       "category": "persona_manipulation",
       "severity": "common",
+      "priority": 9,
       "file": "tests/persona-manipulation/CAN-0014.yml"
     },
     {
@@ -105,6 +119,7 @@
       "name": "Goal Hijacking via Offscreen Text",
       "category": "goal_hijacking",
       "severity": "common",
+      "priority": 16,
       "file": "tests/goal-hijacking/CAN-0015.yml"
     },
     {
@@ -112,6 +127,7 @@
       "name": "Multi-Turn Seed and Exploit Chain",
       "category": "multi_turn_chained",
       "severity": "uncommon",
+      "priority": 1,
       "file": "tests/multi-turn/CAN-0016.yml"
     },
     {
@@ -119,6 +135,7 @@
       "name": "Multilingual Bypass (Mandarin)",
       "category": "encoding_bypass",
       "severity": "emerging",
+      "priority": 17,
       "file": "tests/emerging/CAN-0017.yml"
     },
     {
@@ -126,6 +143,7 @@
       "name": "SVG Text Injection",
       "category": "structured_data_injection",
       "severity": "emerging",
+      "priority": 18,
       "file": "tests/emerging/CAN-0018.yml"
     },
     {
@@ -133,6 +151,7 @@
       "name": "CSS Pseudo-Element Injection",
       "category": "encoding_bypass",
       "severity": "emerging",
+      "priority": 19,
       "file": "tests/emerging/CAN-0019.yml"
     },
     {
@@ -140,6 +159,7 @@
       "name": "Indirect Hypothetical Framing",
       "category": "context_manipulation",
       "severity": "emerging",
+      "priority": 20,
       "file": "tests/emerging/CAN-0020.yml"
     }
   ]
